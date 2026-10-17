@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DoorStep by New Janta Store | 10 Min to 2 Hour Delivery</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body { background-color: #070d0d; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
+    .gold-glow { text-shadow: 0 0 16px rgba(13, 242, 166, 0.4); }
+    .glass-card { background: rgba(15, 23, 23, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(13, 242, 166, 0.15); }
+    .glass-card:hover { border-color: rgba(13, 242, 166, 0.35); }
+    .cyan-btn { background: linear-gradient(135deg, #0df2a6, #08b6d4); color: #041010; font-weight: 800; }
+    .cyan-btn:hover { opacity: 0.95; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="pb-32 selection:bg-teal-500 selection:text-black">
+
+  <!-- TOP HEADER -->
+  <header class="sticky top-0 z-40 bg-[#070d0d]/95 backdrop-blur-md border-b border-teal-950/60 px-4 py-3 shadow-lg">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl cyan-btn flex items-center justify-center text-black text-xl font-black shadow-md">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-lg font-black tracking-tight text-white">DoorStep</h1>
+            <span class="text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-teal-950 text-teal-400 border border-teal-800">Express</span>
+          </div>
+          <p class="text-[11px] font-semibold text-teal-400/90 tracking-wide">by New Janta Store</p>
+        </div>
+      </div>
+      
+      <!-- Right Profile Avatar & Links -->
+      <div class="flex items-center gap-2">
+        <a href="admin.html" target="_blank" title="Open Admin Desk" class="text-xs bg-gray-900 hover:bg-gray-800 text-teal-400 font-bold px-2 py-1.5 rounded-lg border border-teal-900/60 flex items-center gap-1">
+          <i class="fa-solid fa-shop"></i> <span class="hidden sm:inline">Admin</span>
+        </a>
+        <button onclick="toggleProfileDrawer()" class="w-10 h-10 rounded-xl bg-gray-900 border border-teal-500/30 flex items-center justify-center text-teal-300 hover:border-teal-400 transition-all relative">
+          <i class="fa-regular fa-user text-base"></i>
+          <span id="profileStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 absolute top-1.5 right-1.5 border border-black"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SEARCH BAR -->
+  <div class="px-4 pt-3 pb-2 max-w-md mx-auto">
+    <div class="relative">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
+      <input type="text" id="storeSearch" oninput="filterStore()" placeholder="Search 'Basmati Rice', 'Type-C Cable', 'Amul Milk'..." 
+             class="w-full bg-[#0d1616] border border-teal-900/40 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-200 placeholder-gray-500 outline-none focus:border-teal-400">
+    </div>
+  </div>
+
+  <!-- HERO BANNER -->
+  <section class="px-4 py-2 max-w-md mx-auto">
+    <div class="relative overflow-hidden rounded-2xl p-5 border border-teal-500/25 bg-gradient-to-br from-[#0c2222] via-[#091515] to-[#050b0b] shadow-2xl">
+      <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="relative z-10">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-950/80 border border-teal-700/50 text-[11px] font-black text-teal-300 mb-2.5">
+          <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+          ⚡ 10 MINS - 2 HOURS EXPRESS DELIVERY
+        </div>
+        <h2 class="text-2xl font-black text-white leading-tight tracking-tight">DoorStep<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-cyan-400 to-emerald-400">by New Janta Store</span></h2>
+        <p class="text-xs text-gray-300 mt-1.5 font-medium">Kankinara's premier express grocery & essentials delivery store.</p>
+        <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-teal-950 text-center">
+          <div class="bg-black/40 rounded-lg p-1.5 border border-teal-900/40">
+            <p class="text-[10px] text-gray-400">Heritage</p>
+            <p class="text-xs font-black text-teal-300">25+ Years</p>
+          </div>
+          <div class="bg-black/40 rounded-lg p-1.5 border border-teal-900/40">
+            <p class="text-[10px] text-gray-400">Quality</p>
+            <p class="text-xs font-black text-teal-300">100% Pure</p>
+          </div>
+          <div class="bg-black/40 rounded-lg p-1.5 border border-teal-900/40">
+            <p class="text-[10px] text-gray-400">Dispatch</p>
+            <p class="text-xs font-black text-teal-300">In 3 Mins</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT FEED -->
+  <main class="px-4 py-3 max-w-md mx-auto space-y-6" id="productContainer">
+    <!-- Rendered via JS -->
+  </main>
+
+  <!-- FLOATING CART BAR -->
+  <div id="cartBar" class="fixed bottom-0 left-0 right-0 p-3 z-40 hidden">
+    <div class="max-w-md mx-auto bg-gradient-to-r from-[#0df2a6] via-[#08b6d4] to-[#059669] text-black rounded-2xl p-3 shadow-2xl flex items-center justify-between border border-teal-200/40">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center text-black font-black text-lg">
+          <i class="fa-solid fa-basket-shopping"></i>
+        </div>
+        <div>
+          <p class="text-[11px] font-black uppercase tracking-wider text-black/75"><span id="cartCount">0</span> Items in Cart</p>
+          <p class="text-base font-black leading-tight">₹<span id="cartTotal">0</span> <span class="text-xs font-bold line-through opacity-60" id="cartMrp"></span></p>
+        </div>
+      </div>
+      <button onclick="openCheckout()" class="bg-black text-white hover:bg-gray-900 font-black text-xs px-5 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg">
+        Proceed <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+    <div class="bg-[#0b1313] border border-teal-500/30 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl">
+      <div class="flex justify-between items-center border-b border-teal-950 pb-3">
+        <div>
+          <h2 class="text-base font-black text-white">Express Delivery Checkout</h2>
+          <p class="text-[11px] text-teal-400">DoorStep by New Janta Store</p>
+        </div>
+        <button onclick="closeCheckout()" class="w-8 h-8 rounded-full bg-gray-900 border border-teal-900/60 flex items-center justify-center text-gray-400 hover:text-white">&times;</button>
+      </div>
+
+      <!-- Items Summary -->
+      <div class="my-4 space-y-2 border-b border-teal-950 pb-3" id="checkoutItemsList">
+        <!-- Injected -->
+      </div>
+
+      <!-- Customer Form -->
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-gray-300">Full Name *</label>
+          <input type="text" id="custName" placeholder="e.g. Manjeet Shaw" class="w-full bg-[#121c1c] border border-teal-900/50 rounded-xl p-2.5 mt-1 text-white outline-none focus:border-teal-400">
+        </div>
+        <div>
+          <label class="font-bold text-gray-300">Mobile Number *</label>
+          <input type="tel" id="custPhone" placeholder="10-digit mobile number" class="w-full bg-[#121c1c] border border-teal-900/50 rounded-xl p-2.5 mt-1 text-white outline-none focus:border-teal-400">
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="font-bold text-gray-300">Delivery Address *</label>
+            <button type="button" onclick="pinLiveGps()" id="gpsBtn" class="text-[11px] text-teal-300 font-bold hover:underline flex items-center gap-1">
+              <i class="fa-solid fa-location-crosshairs"></i> 📍 Pin Live GPS
+            </button>
+          </div>
+          <textarea id="custAddress" rows="2" placeholder="House no, Street, Landmark (Kankinara, North 24 Parganas)" class="w-full bg-[#121c1c] border border-teal-900/50 rounded-xl p-2.5 text-white outline-none focus:border-teal-400"></textarea>
+          <input type="hidden" id="custGps" value="">
+          <p id="gpsFeedback" class="text-[10px] text-teal-400 mt-1 hidden"></p>
+        </div>
+
+        <!-- Payment Method -->
+        <div>
+          <label class="font-bold text-gray-300 mb-1.5 block">Payment Mode</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-teal-900/60 bg-[#121c1c] cursor-pointer">
+              <input type="radio" name="payMode" value="COD" checked class="accent-teal-400">
+              <span class="font-bold text-white">Cash on Delivery</span>
+            </label>
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-teal-900/60 bg-[#121c1c] cursor-pointer">
+              <input type="radio" name="payMode" value="RAZORPAY" class="accent-teal-400">
+              <span class="font-bold text-white">Razorpay / UPI</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bill Breakdown -->
+      <div class="mt-4 pt-3 border-t border-teal-950 space-y-1.5 text-xs text-gray-400">
+        <div class="flex justify-between"><span>Item Total</span><span class="text-white font-bold">₹<span id="modalTotal">0</span></span></div>
+        <div class="flex justify-between text-teal-400"><span>MRP Savings</span><span class="font-bold">-₹<span id="modalSavings">0</span></span></div>
+        <div class="flex justify-between"><span>Delivery Partner Fee</span><span class="text-emerald-400 font-bold uppercase">FREE</span></div>
+        <div class="flex justify-between text-sm font-black text-white pt-2 border-t border-teal-950/80">
+          <span>Grand Total</span>
+          <span class="text-teal-300">₹<span id="modalFinalTotal">0</span></span>
+        </div>
+      </div>
+
+      <button onclick="handlePlaceOrder()" class="w-full mt-4 cyan-btn py-3 rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-xl">
+        <i class="fa-solid fa-lock"></i> Confirm & Place Order
+      </button>
+    </div>
+  </div>
+
+  <!-- ORDER SUCCESS / TRACKER MODAL -->
+  <div id="orderSuccessModal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4 backdrop-blur-md">
+    <div class="bg-[#0b1313] border border-teal-500/40 w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl">
+      <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl mx-auto mb-3 border border-emerald-500/40">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <h3 class="text-lg font-black text-white">Order Confirmed!</h3>
+      <p class="text-xs text-teal-300 mt-1 font-bold">Order ID: <span id="confirmedOrderId">#DS101</span></p>
+      <p class="text-xs text-gray-400 mt-2">Dispatched by <span class="font-bold text-white">New Janta Store</span>. Reaching your doorstep within 10-30 minutes.</p>
+      
+      <div class="my-4 p-3 rounded-xl bg-gray-900 border border-teal-900/60 text-left text-xs space-y-2">
+        <div class="flex items-center gap-2 text-teal-400 font-bold">
+          <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span> Live Status: Packing at Store
+        </div>
+        <div class="text-gray-400" id="confirmedOrderItems"></div>
+      </div>
+
+      <button onclick="closeSuccessModal()" class="w-full bg-gray-900 hover:bg-gray-800 text-teal-300 border border-teal-800 font-bold py-2.5 rounded-xl text-xs">
+        Continue Shopping
+      </button>
+    </div>
+  </div>
+
+  <!-- PROFILE & ORDER HISTORY DRAWER -->
+  <div id="profileDrawer" class="fixed inset-0 bg-black/80 z-50 hidden flex justify-end backdrop-blur-xs">
+    <div class="bg-[#0a1111] border-l border-teal-500/20 w-full max-w-sm h-full p-5 overflow-y-auto no-scrollbar flex flex-col justify-between">
+      <div>
+        <div class="flex justify-between items-center border-b border-teal-950 pb-3">
+          <h3 class="text-sm font-black text-white flex items-center gap-2">
+            <i class="fa-solid fa-id-card text-teal-400"></i> My Profile & Rewards
+          </h3>
+          <button onclick="toggleProfileDrawer()" class="text-gray-400 hover:text-white text-xl font-black">&times;</button>
+        </div>
+
+        <!-- Member Tier Card -->
+        <div class="my-4 p-4 rounded-2xl bg-gradient-to-br from-teal-950/60 to-black border border-teal-500/30">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400">Loyalty Club Tier</p>
+              <h4 class="text-base font-black text-teal-300" id="tierName">Bronze Member 🥉</h4>
+            </div>
+            <span class="text-xs font-black px-2.5 py-1 rounded-full bg-teal-950 text-teal-300 border border-teal-800" id="orderCountBadge">0 Orders</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-teal-950/80 flex justify-between text-xs">
+            <span class="text-gray-400">Lifetime MRP Savings:</span>
+            <span class="font-black text-emerald-400">₹<span id="lifetimeSavings">0</span></span>
+          </div>
+        </div>
+
+        <!-- Orders History -->
+        <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider mb-2">Previous Orders</h4>
+        <div id="orderHistoryList" class="space-y-2.5 text-xs">
+          <!-- Injected -->
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="pt-4 border-t border-teal-950 space-y-2">
+        <a href="admin.html" class="w-full bg-gray-900 hover:bg-gray-800 text-teal-400 border border-teal-900/60 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+          <i class="fa-solid fa-store"></i> Open Shopkeeper Admin
+        </a>
+        <a href="rider.html" class="w-full bg-gray-900 hover:bg-gray-800 text-blue-400 border border-blue-900/60 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+          <i class="fa-solid fa-motorcycle"></i> Open Delivery Rider View
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DEFAULT INVENTORY
+    const DEFAULT_PRODUCTS = [
+      { id: "p1", name: "Aashirvaad Superior MP Shuddh Chakki Atta", unit: "5 kg", price: 215, mrp: 260, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400" },
+      { id: "p2", name: "Fortune Sunlite Refined Sunflower Oil", unit: "1 L", price: 135, mrp: 165, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400" },
+      { id: "p3", name: "Amul Taaza Fresh Toned Milk", unit: "500 ml", price: 27, mrp: 28, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400" },
+      { id: "p4", name: "India Gate Feast Rozzana Basmati Rice", unit: "1 kg", price: 89, mrp: 110, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
+      
+      { id: "p5", name: "65W Fast Charging Braided Type-C Cable", unit: "1.2 Meter", price: 199, mrp: 499, section: "Electronics & Accessories", img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" },
+      { id: "p6", name: "Magnetic Bass Boost 3.5mm Earphones", unit: "1 Unit", price: 149, mrp: 399, section: "Electronics & Accessories", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
+      { id: "p7", name: "20W Dual Port Fast Wall Charger", unit: "Adapter Only", price: 299, mrp: 699, section: "Electronics & Accessories", img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" },
+
+      { id: "p8", name: "Lay's Spanish Tomato Tango Chips", unit: "52 g", price: 20, mrp: 20, section: "Snacks & Beverages", img: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400" },
+      { id: "p9", name: "Haldiram's Prabhuji Bhujia Sev", unit: "200 g", price: 55, mrp: 65, section: "Snacks & Beverages", img: "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400" },
+      { id: "p10", name: "Coca Cola Chilled Soft Drink", unit: "750 ml", price: 40, mrp: 45, section: "Snacks & Beverages", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
+    ];
+
+    function getProducts() {
+      const saved = localStorage.getItem("doorstep_products");
+      return saved ? JSON.parse(saved) : DEFAULT_PRODUCTS;
+    }
+
+    function getCart() {
+      const saved = localStorage.getItem("doorstep_cart");
+      return saved ? JSON.parse(saved) : {};
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem("doorstep_cart", JSON.stringify(cart));
+      updateCartUI();
+    }
+
+    function renderFeed() {
+      const products = getProducts();
+      const cart = getCart();
+      const container = document.getElementById("productContainer");
+      const search = document.getElementById("storeSearch").value.toLowerCase();
+      container.innerHTML = "";
+
+      // Group products by section
+      const sections = {};
+      products.forEach(p => {
+        if (!search || p.name.toLowerCase().includes(search)) {
+          const sec = p.section || "Daily Essentials & Groceries";
+          if (!sections[sec]) sections[sec] = [];
+          sections[sec].push(p);
+        }
+      });
+
+      if (Object.keys(sections).length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold text-xs">No products match your search.</div>`;
+        return;
+      }
+
+      for (let secName in sections) {
+        const secDiv = document.createElement("div");
+        secDiv.className = "space-y-3";
+        secDiv.innerHTML = `
+          <div class="flex items-center justify-between border-b border-teal-950 pb-1.5">
+            <h3 class="text-sm font-black text-white tracking-wide flex items-center gap-1.5">
+              <span class="w-1.5 h-4 rounded-full cyan-btn"></span> ${secName}
+            </h3>
+            <span class="text-[10px] text-teal-400/80 font-bold uppercase">${sections[secName].length} Items</span>
+          </div>
+          <div class="grid grid-cols-2 gap-3" id="sec_${secName.replace(/\s+/g, '')}"></div>
+        `;
+        container.appendChild(secDiv);
+
+        const grid = secDiv.querySelector(`#sec_${secName.replace(/\s+/g, '')}`);
+        sections[secName].forEach(p => {
+          const qty = cart[p.id] || 0;
+          const card = document.createElement("div");
+          card.className = "glass-card rounded-2xl p-3 flex flex-col justify-between transition-all duration-200";
+          card.innerHTML = `
+            <div>
+              <div class="relative w-full h-28 rounded-xl overflow-hidden mb-2 bg-black/40">
+                <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover">
+                <span class="absolute top-1.5 left-1.5 bg-black/75 backdrop-blur-md text-[9px] font-black text-teal-300 px-2 py-0.5 rounded-md border border-teal-900/60">
+                  ⚡ 10-15m
+                </span>
+                ${p.mrp > p.price ? `<span class="absolute top-1.5 right-1.5 bg-emerald-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded-md">${Math.round(((p.mrp - p.price)/p.mrp)*100)}% OFF</span>` : ''}
+              </div>
+              <h4 class="text-xs font-bold text-gray-100 line-clamp-2 leading-tight">${p.name}</h4>
+              <p class="text-[11px] text-gray-400 mt-0.5">${p.unit}</p>
+            </div>
+            <div class="flex items-center justify-between mt-3 pt-2 border-t border-teal-950/80">
+              <div>
+                <p class="text-sm font-black text-white">₹${p.price}</p>
+                ${p.mrp > p.price ? `<p class="text-[10px] text-gray-500 line-through">₹${p.mrp}</p>` : ''}
+              </div>
+              <div>
+                ${qty === 0 
+                  ? `<button onclick="addToCart('${p.id}')" class="cyan-btn text-xs px-3.5 py-1.5 rounded-xl shadow-md uppercase">ADD</button>`
+                  : `<div class="flex items-center cyan-btn rounded-xl text-xs font-black">
+                       <button onclick="changeQty('${p.id}', -1)" class="px-2 py-1">-</button>
+                       <span class="px-1.5">${qty}</span>
+                       <button onclick="changeQty('${p.id}', 1)" class="px-2 py-1">+</button>
+                     </div>`
+                }
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+    }
+
+    function addToCart(id) {
+      const cart = getCart();
+      cart[id] = 1;
+      saveCart(cart);
+      renderFeed();
+    }
+
+    function changeQty(id, delta) {
+      const cart = getCart();
+      cart[id] = (cart[id] || 0) + delta;
+      if (cart[id] <= 0) delete cart[id];
+      saveCart(cart);
+      renderFeed();
+    }
+
+    function updateCartUI() {
+      const cart = getCart();
+      const products = getProducts();
+      let count = 0, total = 0, mrpTotal = 0;
+
+      for (let id in cart) {
+        const p = products.find(x => x.id === id);
+        if (p) {
+          count += cart[id];
+          total += p.price * cart[id];
+          mrpTotal += (p.mrp || p.price) * cart[id];
+        }
+      }
+
+      document.getElementById("cartCount").innerText = count;
+      document.getElementById("cartTotal").innerText = total;
+      document.getElementById("cartMrp").innerText = mrpTotal > total ? `₹${mrpTotal}` : '';
+      
+      const bar = document.getElementById("cartBar");
+      if (count > 0) bar.classList.remove("hidden");
+      else bar.classList.add("hidden");
+    }
+
+    function filterStore() { renderFeed(); }
+
+    function pinLiveGps() {
+      const btn = document.getElementById("gpsBtn");
+      const feedback = document.getElementById("gpsFeedback");
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Fetching GPS...`;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            const lat = pos.coords.latitude.toFixed(5);
+            const lng = pos.coords.longitude.toFixed(5);
+            document.getElementById("custGps").value = `${lat},${lng}`;
+            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> GPS Pinned`;
+            feedback.innerText = `✓ Latitude: ${lat}, Longitude: ${lng} (Pinned to Google Maps)`;
+            feedback.classList.remove("hidden");
+          },
+          err => {
+            btn.innerHTML = `📍 Pin Live GPS`;
+            feedback.innerText = `GPS access denied or unavailable. Please type your complete address.`;
+            feedback.classList.remove("hidden");
+          },
+          { enableHighAccuracy: true, timeout: 8000 }
+        );
+      } else {
+        btn.innerHTML = `📍 Pin Live GPS`;
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+
+    function openCheckout() {
+      const cart = getCart();
+      const products = getProducts();
+      const list = document.getElementById("checkoutItemsList");
+      list.innerHTML = "";
+      let total = 0, mrpTotal = 0;
+
+      for (let id in cart) {
+        const p = products.find(x => x.id === id);
+        if (p) {
+          total += p.price * cart[id];
+          mrpTotal += (p.mrp || p.price) * cart[id];
+          const div = document.createElement("div");
+          div.className = "flex justify-between items-center text-xs text-gray-200";
+          div.innerHTML = `
+            <span>${p.name} <span class="text-teal-400">x ${cart[id]}</span></span>
+            <span class="font-bold">₹${p.price * cart[id]}</span>
+          `;
+          list.appendChild(div);
+        }
+      }
+
+      document.getElementById("modalTotal").innerText = total;
+      document.getElementById("modalSavings").innerText = Math.max(0, mrpTotal - total);
+      document.getElementById("modalFinalTotal").innerText = total;
+
+      // Auto fill session customer details
+      const user = JSON.parse(localStorage.getItem("doorstep_user") || "{}");
+      if (user.name) document.getElementById("custName").value = user.name;
+      if (user.phone) document.getElementById("custPhone").value = user.phone;
+      if (user.address) document.getElementById("custAddress").value = user.address;
+
+      document.getElementById("checkoutModal").classList.remove("hidden");
+    }
+
+    function closeCheckout() {
+      document.getElementById("checkoutModal").classList.add("hidden");
+    }
+
+    function handlePlaceOrder() {
+      const name = document.getElementById("custName").value.trim();
+      const phone = document.getElementById("custPhone").value.trim();
+      const address = document.getElementById("custAddress").value.trim();
+      const gps = document.getElementById("custGps").value;
+      const payMode = document.querySelector('input[name="payMode"]:checked').value;
+
+      if (!name || phone.length < 10 || !address) {
+        alert("Please provide your name, 10-digit phone number, and address.");
+        return;
+      }
+
+      // Save user profile for persistent session
+      localStorage.setItem("doorstep_user", JSON.stringify({ name, phone, address }));
+
+      const cart = getCart();
+      const products = getProducts();
+      const items = [];
+      let total = 0, mrpTotal = 0;
+
+      for (let id in cart) {
+        const p = products.find(x => x.id === id);
+        if (p) {
+          items.push({ name: p.name, unit: p.unit, price: p.price, qty: cart[id] });
+          total += p.price * cart[id];
+          mrpTotal += (p.mrp || p.price) * cart[id];
+        }
+      }
+
+      const orderData = {
+        orderId: "DS" + Math.floor(1000 + Math.random() * 9000),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString(),
+        customer: { name, phone, address, gps },
+        items,
+        total,
+        savings: Math.max(0, mrpTotal - total),
+        payMode,
+        payStatus: payMode === "COD" ? "Cash Pending" : "PAID",
+        status: "NEW", // NEW -> ASSIGNED -> DELIVERED
+        rider: null
+      };
+
+      if (payMode === "RAZORPAY") {
+        const razorpayKey = localStorage.getItem("doorstep_rzp_key") || "rzp_test_placeholder";
+        
+        if (typeof Razorpay !== "undefined" && razorpayKey !== "rzp_test_placeholder") {
+          const options = {
+            key: razorpayKey,
+            amount: total * 100,
+            currency: "INR",
+            name: "DoorStep",
+            description: `Order #${orderData.orderId} - New Janta Store`,
+            handler: function(response) {
+              orderData.payStatus = `PAID (${response.razorpay_payment_id || 'Online'})`;
+              finalizeOrder(orderData);
+            },
+            prefill: { name, contact: phone },
+            theme: { color: "#0df2a6" }
+          };
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          // Instant safe simulated Razorpay authorization
+          const dummyPayId = "pay_" + Math.random().toString(36).substring(2, 10).toUpperCase();
+          orderData.payStatus = `PAID (${dummyPayId})`;
+          finalizeOrder(orderData);
+        }
+      } else {
+        finalizeOrder(orderData);
+      }
+    }
+
+    function finalizeOrder(orderData) {
+      const orders = JSON.parse(localStorage.getItem("doorstep_orders") || "[]");
+      orders.unshift(orderData);
+      localStorage.setItem("doorstep_orders", JSON.stringify(orders));
+
+      // Trigger cross-window sync
+      window.dispatchEvent(new Event('storage'));
+
+      // Clear cart
+      localStorage.removeItem("doorstep_cart");
+      updateCartUI();
+      renderFeed();
+      closeCheckout();
+
+      // Show confirmation
+      document.getElementById("confirmedOrderId").innerText = "#" + orderData.orderId;
+      document.getElementById("confirmedOrderItems").innerText = orderData.items.map(i => `${i.name} x${i.qty}`).join(", ");
+      document.getElementById("orderSuccessModal").classList.remove("hidden");
+    }
+
+    function closeSuccessModal() {
+      document.getElementById("orderSuccessModal").classList.add("hidden");
+    }
+
+    function toggleProfileDrawer() {
+      const drawer = document.getElementById("profileDrawer");
+      if (drawer.classList.contains("hidden")) {
+        renderProfile();
+        drawer.classList.remove("hidden");
+      } else {
+        drawer.classList.add("hidden");
+      }
+    }
+
+    function renderProfile() {
+      const user = JSON.parse(localStorage.getItem("doorstep_user") || "{}");
+      const orders = JSON.parse(localStorage.getItem("doorstep_orders") || "[]");
+      const myOrders = orders.filter(o => !user.phone || o.customer.phone === user.phone);
+
+      const orderCount = myOrders.length;
+      let totalSavings = myOrders.reduce((sum, o) => sum + (o.savings || 0), 0);
+
+      let tier = "Bronze Member 🥉";
+      if (orderCount >= 200) tier = "Platinum VIP 💎";
+      else if (orderCount >= 150) tier = "Gold Member 🥇";
+      else if (orderCount >= 100) tier = "Silver Member 🥈";
+
+      document.getElementById("tierName").innerText = tier;
+      document.getElementById("orderCountBadge").innerText = `${orderCount} Orders`;
+      document.getElementById("lifetimeSavings").innerText = totalSavings;
+
+      const historyDiv = document.getElementById("orderHistoryList");
+      historyDiv.innerHTML = "";
+
+      if (myOrders.length === 0) {
+        historyDiv.innerHTML = `<p class="text-gray-500">No orders placed yet.</p>`;
+        return;
+      }
+
+      myOrders.forEach(o => {
+        const item = document.createElement("div");
+        item.className = "p-3 rounded-xl bg-gray-900 border border-teal-950";
+        let statusBadge = `<span class="text-teal-400 font-bold">Packing in Store</span>`;
+        if (o.status === "ASSIGNED") statusBadge = `<span class="text-yellow-400 font-bold">Rider on way (${o.rider || 'Express'})</span>`;
+        if (o.status === "DELIVERED") statusBadge = `<span class="text-emerald-400 font-bold">Delivered ✓</span>`;
+
+        item.innerHTML = `
+          <div class="flex justify-between items-center text-gray-300">
+            <span class="font-bold text-white">#${o.orderId}</span>
+            <span>₹${o.total} (${o.payMode})</span>
+          </div>
+          <div class="flex justify-between items-center mt-1 text-[11px]">
+            <span class="text-gray-500">${o.time}</span>
+            ${statusBadge}
+          </div>
+        `;
+        historyDiv.appendChild(item);
+      });
+    }
+
+    window.addEventListener('storage', () => { renderFeed(); updateCartUI(); });
+    renderFeed();
+    updateCartUI();
+  </script>
+</body>
+</html>
