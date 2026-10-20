@@ -1,128 +1,69 @@
+<?php
+session_start();
+
+/* DoorStep Rider Panel — Demo UI */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Delivery Partner App | DoorStep by New Janta Store</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { background-color: #070d0d; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
-    .glass-card { background: rgba(15, 23, 23, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(13, 242, 166, 0.18); }
-    .cyan-btn { background: linear-gradient(135deg, #0df2a6, #08b6d4); color: #041010; font-weight: 800; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DoorStep Rider</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101411;color:#f5f7f3;font-family:Arial,sans-serif}
+header{padding:20px;background:#19211b;border-bottom:1px solid #344035}
+h1{margin:0;color:#baff39;font-size:24px}
+main{max-width:650px;margin:auto;padding:16px}
+.card{background:#1a211c;border:1px solid #303a32;border-radius:16px;padding:18px;margin:15px 0}
+input,select,button{width:100%;padding:12px;margin:7px 0;border-radius:9px}
+input,select{background:#101411;color:white;border:1px solid #39443a}
+button{background:#baff39;color:#14200e;border:0;font-weight:bold;cursor:pointer}
+.muted{color:#a5afa7;font-size:14px;line-height:1.6}
+.badge{display:inline-block;background:#303a32;padding:7px 10px;border-radius:8px}
+</style>
 </head>
-<body class="pb-16">
+<body>
+<header>
+<h1>DoorStep Rider</h1>
+<div class="muted">DELIVERY PARTNER PANEL</div>
+</header>
+<main>
+<div class="card">
+<h2>Delivery Dashboard</h2>
+<p class="muted">Assigned deliveries will appear here once connected to the shared orders database.</p>
+<span class="badge">Ready for delivery</span>
+</div>
 
-  <!-- RIDER HEADER -->
-  <header class="sticky top-0 z-30 bg-[#070d0d]/95 backdrop-blur-md border-b border-teal-950 p-4 shadow-xl">
-    <div class="max-w-md mx-auto flex justify-between items-center">
-      <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center justify-center text-lg">
-          <i class="fa-solid fa-motorcycle"></i>
-        </div>
-        <div>
-          <h1 class="text-base font-black text-white">DoorStep Rider App</h1>
-          <p class="text-[11px] text-teal-400 font-semibold">Express Delivery Partner</p>
-        </div>
-      </div>
+<div class="card">
+<h2>Update Delivery Status</h2>
+<form method="post">
+<label>Order ID</label>
+<input type="text" name="order_id" placeholder="Enter order ID" required>
+<label>Delivery Status</label>
+<select name="status">
+<option value="accepted">Order accepted</option>
+<option value="picked_up">Picked up from store</option>
+<option value="on_the_way">On the way</option>
+<option value="delivered">Delivered</option>
+</select>
+<button type="submit" name="update_demo" value="1">Update Status</button>
+</form>
 
-      <!-- Select Rider Profile -->
-      <select id="riderSelect" onchange="renderRiderTasks()" class="bg-[#121c1c] border border-teal-900/60 text-white rounded-xl px-2.5 py-1.5 text-xs outline-none font-bold">
-        <option value="Rahul Kumar">Rahul (Rider 1)</option>
-        <option value="Sumit Roy">Sumit (Rider 2)</option>
-        <option value="Amit Shaw">Amit (Rider 3)</option>
-      </select>
-    </div>
-  </header>
+<?php if (isset($_POST['update_demo'])): ?>
+<p class="muted">Demo only: status was not saved. Connect this form to the shared MySQL orders table to save updates.</p>
+<?php endif; ?>
+</div>
 
-  <main class="max-w-md mx-auto p-4 space-y-4">
-    <div class="flex justify-between items-center text-xs font-black text-gray-400">
-      <span>Assigned Deliveries</span>
-      <span id="activeCount" class="text-teal-400">0 Active</span>
-    </div>
-
-    <div id="riderTasks" class="space-y-3">
-      <!-- Injected -->
-    </div>
-  </main>
-
-  <script>
-    function renderRiderTasks() {
-      const selectedRider = document.getElementById("riderSelect").value;
-      const orders = JSON.parse(localStorage.getItem("doorstep_orders") || "[]");
-      const list = document.getElementById("riderTasks");
-      list.innerHTML = "";
-
-      const myTasks = orders.filter(o => o.status === "ASSIGNED" && (!o.rider || o.rider === selectedRider));
-      document.getElementById("activeCount").innerText = `${myTasks.length} Active Tasks`;
-
-      if (myTasks.length === 0) {
-        list.innerHTML = `
-          <div class="glass-card p-8 rounded-2xl text-center text-gray-500 font-bold text-xs space-y-2">
-            <i class="fa-solid fa-mug-hot text-2xl text-teal-400"></i>
-            <p>No active deliveries assigned to you right now.</p>
-            <p class="text-[11px] text-gray-600">Waiting for New Janta Store dispatcher...</p>
-          </div>
-        `;
-        return;
-      }
-
-      myTasks.forEach(o => {
-        const div = document.createElement("div");
-        div.className = "glass-card rounded-2xl p-4 space-y-3 border border-teal-500/25";
-
-        const itemsStr = o.items.map(i => `${i.name} (${i.unit}) x ${i.qty}`).join(", ");
-
-        const mapBtn = o.customer.gps
-          ? `<a href="https://www.google.com/maps/dir/?api=1&destination=${o.customer.gps}" target="_blank" class="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5"><i class="fa-solid fa-location-arrow"></i> Open Turn-by-Turn GPS Map</a>`
-          : `<div class="text-[11px] text-gray-500 p-2 rounded-lg bg-black/40 text-center">No GPS coordinates available. Navigate to street address.</div>`;
-
-        div.innerHTML = `
-          <div class="flex justify-between items-center border-b border-teal-950 pb-2">
-            <span class="text-sm font-black text-white">#${o.orderId}</span>
-            <span class="text-xs font-black px-2.5 py-0.5 rounded-full ${o.payStatus.includes('PAID') ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-amber-950 text-amber-300 border border-amber-800'}">
-              ${o.payStatus.includes('PAID') ? 'Online Paid ✓' : `Collect Cash: ₹${o.total}`}
-            </span>
-          </div>
-
-          <div class="space-y-1.5 text-xs">
-            <p class="font-bold text-gray-200">👤 Customer: <span class="text-white">${o.customer.name}</span></p>
-            <p class="text-gray-400">📍 Address: <span class="text-gray-200">${o.customer.address}</span></p>
-            <p class="text-gray-400">📦 Items: <span class="text-teal-300">${itemsStr}</span></p>
-          </div>
-
-          ${mapBtn}
-
-          <div class="grid grid-cols-2 gap-2 pt-1">
-            <a href="tel:${o.customer.phone}" class="bg-gray-900 hover:bg-gray-800 text-teal-300 border border-teal-900 font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-phone"></i> Call Customer
-            </a>
-            <button onclick="markDelivered('${o.orderId}')" class="cyan-btn text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-check"></i> Delivered
-            </button>
-          </div>
-        `;
-        list.appendChild(div);
-      });
-    }
-
-    function markDelivered(orderId) {
-      if (confirm("Confirm that items have been delivered and payment received?")) {
-        const orders = JSON.parse(localStorage.getItem("doorstep_orders") || "[]");
-        const target = orders.find(o => o.orderId === orderId);
-        if (target) {
-          target.status = "DELIVERED";
-          if (!target.payStatus.includes("PAID")) target.payStatus = "COD Collected ✓";
-          localStorage.setItem("doorstep_orders", JSON.stringify(orders));
-          window.dispatchEvent(new Event('storage'));
-          renderRiderTasks();
-        }
-      }
-    }
-
-    window.addEventListener('storage', () => { renderRiderTasks(); });
-    renderRiderTasks();
-  </script>
+<div class="card">
+<h2>Delivery Instructions</h2>
+<p class="muted">
+1. Check the assigned order.<br>
+2. Collect the items from New Janta Store.<br>
+3. Contact the customer using authorized order details.<br>
+4. Update the status after each step.
+</p>
+</div>
+</main>
 </body>
 </html>
