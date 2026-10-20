@@ -1,334 +1,246 @@
+<?php
+session_start();
+
+/*
+ DoorStep by New Janta Store
+ Customer Website
+*/
+
+$storeName = "DoorStep";
+$minimumOrder = 199;
+
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+$products = [
+    1 => ["name" => "Fresh Potatoes", "price" => 30, "unit" => "1 kg", "emoji" => "🥔", "category" => "Vegetables"],
+    2 => ["name" => "Fresh Onions", "price" => 35, "unit" => "1 kg", "emoji" => "🧅", "category" => "Vegetables"],
+    3 => ["name" => "Amul Milk", "price" => 30, "unit" => "500 ml", "emoji" => "🥛", "category" => "Dairy"],
+    4 => ["name" => "Brown Bread", "price" => 40, "unit" => "1 pack", "emoji" => "🍞", "category" => "Bakery"],
+    5 => ["name" => "Fresh Bananas", "price" => 50, "unit" => "1 dozen", "emoji" => "🍌", "category" => "Fruits"],
+    6 => ["name" => "Maggi Noodles", "price" => 14, "unit" => "1 pack", "emoji" => "🍜", "category" => "Snacks"],
+    7 => ["name" => "Parle-G Biscuits", "price" => 10, "unit" => "1 pack", "emoji" => "🍪", "category" => "Snacks"],
+    8 => ["name" => "Cold Drink", "price" => 40, "unit" => "750 ml", "emoji" => "🥤", "category" => "Drinks"]
+];
+
+$message = "";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $action = $_POST["action"] ?? "";
+    $id = (int)($_POST["id"] ?? 0);
+
+    if ($action === "add" && isset($products[$id])) {
+        $_SESSION['cart'][$id] = ($_SESSION['cart'][$id] ?? 0) + 1;
+        $message = "Product added to cart!";
+    }
+
+    if ($action === "remove" && isset($_SESSION['cart'][$id])) {
+        $_SESSION['cart'][$id]--;
+        if ($_SESSION['cart'][$id] <= 0) {
+            unset($_SESSION['cart'][$id]);
+        }
+    }
+
+    if ($action === "clear") {
+        $_SESSION['cart'] = [];
+        $message = "Cart cleared.";
+    }
+}
+
+$cartCount = array_sum($_SESSION['cart']);
+$subtotal = 0;
+
+foreach ($_SESSION['cart'] as $id => $qty) {
+    if (isset($products[$id])) {
+        $subtotal += $products[$id]['price'] * $qty;
+    }
+}
+
+$delivery = $subtotal >= $minimumOrder || $subtotal == 0 ? 0 : 20;
+$total = $subtotal + $delivery;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DoorStep by New Janta Store | 10 Min to 2 Hour Delivery</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <style>
-    body { background-color: #070d0d; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; }
-    .gold-glow { text-shadow: 0 0 16px rgba(13, 242, 166, 0.4); }
-    .glass-card { background: rgba(15, 23, 23, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(13, 242, 166, 0.15); }
-    .glass-card:hover { border-color: rgba(13, 242, 166, 0.35); }
-    .cyan-btn { background: linear-gradient(135deg, #0df2a6, #08b6d4); color: #041010; font-weight: 800; }
-    .cyan-btn:hover { opacity: 0.95; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DoorStep by New Janta Store</title>
+<style>
+:root {
+    --bg:#101411;
+    --panel:#1a211c;
+    --green:#baff39;
+    --text:#f5f7f3;
+    --muted:#a5afa7;
+    --border:#303a32;
+}
+*{box-sizing:border-box}
+body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+}
+header{
+    position:sticky;top:0;z-index:5;background:#141a15;
+    padding:15px;border-bottom:1px solid var(--border);
+}
+.top{max-width:1000px;margin:auto;display:flex;
+    align-items:center;justify-content:space-between;gap:10px}
+.logo{font-size:22px;font-weight:900;color:var(--green)}
+.logo small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.cartlink{background:var(--green);color:#101410;padding:10px 14px;
+    border-radius:12px;text-decoration:none;font-weight:bold}
+main{max-width:1000px;margin:auto;padding:16px}
+.hero{
+    background:linear-gradient(120deg,#263b21,#17221a);
+    border:1px solid #40513a;border-radius:22px;padding:25px 20px;
+    margin:8px 0 22px;
+}
+.hero h1{font-size:30px;margin:0 0 10px;line-height:1.15}
+.hero p{color:#d0dacd;margin:0 0 15px}
+.pill{display:inline-block;background:var(--green);color:#15200d;
+    border-radius:30px;padding:9px 13px;font-weight:bold;font-size:13px}
+.search{width:100%;padding:14px;border-radius:13px;border:1px solid var(--border);
+    background:var(--panel);color:white;font-size:16px;margin-bottom:20px}
+h2{font-size:20px;margin:22px 0 14px}
+.categories{display:flex;gap:10px;overflow:auto;padding-bottom:10px}
+.category{flex:0 0 auto;background:var(--panel);border:1px solid var(--border);
+    border-radius:14px;padding:12px;color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--border);
+    border-radius:17px;padding:13px;min-width:0}
+.emoji{height:90px;display:flex;align-items:center;justify-content:center;
+    background:#242d25;border-radius:12px;font-size:48px;margin-bottom:12px}
+.name{font-weight:bold;margin-bottom:6px}
+.unit{font-size:12px;color:var(--muted)}
+.price-row{display:flex;align-items:center;justify-content:space-between;
+    gap:6px;margin-top:12px}
+.price{font-weight:900}
+button{border:0;cursor:pointer;font-weight:bold}
+.add{background:var(--green);color:#17200f;border-radius:10px;padding:9px 13px}
+.cartbox{background:var(--panel);border:1px solid var(--border);
+    border-radius:18px;padding:16px;margin:25px 0}
+.cartitem{display:flex;justify-content:space-between;gap:10px;
+    padding:12px 0;border-bottom:1px solid var(--border)}
+.remove{background:#303a32;color:white;border-radius:7px;padding:5px 10px}
+.total{display:flex;justify-content:space-between;margin-top:12px}
+.grand{font-size:19px;font-weight:bold;color:var(--green)}
+.note{font-size:13px;color:var(--muted);line-height:1.6}
+.empty{color:var(--muted);padding:10px 0}
+footer{text-align:center;color:var(--muted);padding:25px 12px;font-size:12px}
+.notice{background:#26351f;border-radius:10px;padding:10px;margin:12px 0;color:var(--green)}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero h1{font-size:40px}}
+</style>
 </head>
-<body class="pb-32 selection:bg-teal-500 selection:text-black">
+<body>
 
-  <!-- TOP HEADER (NO ADMIN BUTTON) -->
-  <header class="sticky top-0 z-40 bg-[#070d0d]/95 backdrop-blur-md border-b border-teal-950/60 px-4 py-3 shadow-lg">
-    <div class="max-w-md mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-xl cyan-btn flex items-center justify-center text-black text-xl font-black shadow-md">
-          <i class="fa-solid fa-bolt"></i>
-        </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <h1 class="text-lg font-black tracking-tight text-white">DoorStep</h1>
-            <span class="text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-teal-950 text-teal-400 border border-teal-800">Express</span>
-          </div>
-          <p class="text-[11px] font-semibold text-teal-400/90 tracking-wide">by New Janta Store</p>
-        </div>
-      </div>
-      
-      <!-- Only Customer Profile Button -->
-      <button onclick="toggleProfileDrawer()" class="w-10 h-10 rounded-xl bg-gray-900 border border-teal-500/30 flex items-center justify-center text-teal-300 hover:border-teal-400 transition-all relative">
-        <i class="fa-regular fa-user text-base"></i>
-        <span id="profileStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 absolute top-1.5 right-1.5 border border-black"></span>
-      </button>
-    </div>
-  </header>
-
-  <!-- SEARCH BAR -->
-  <div class="px-4 pt-3 pb-2 max-w-md mx-auto">
-    <div class="relative">
-      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-sm"></i>
-      <input type="text" id="storeSearch" oninput="filterStore()" placeholder="Search 'Basmati Rice', 'Type-C Cable', 'Amul Milk'..." 
-             class="w-full bg-[#0d1616] border border-teal-900/40 rounded-xl pl-10 pr-4 py-2.5 text-xs text-gray-200 placeholder-gray-500 outline-none focus:border-teal-400">
-    </div>
+<header>
+  <div class="top">
+    <div class="logo">DoorStep<small>BY NEW JANTA STORE</small></div>
+    <a class="cartlink" href="#cart">🛒 Cart (<?= (int)$cartCount ?>)</a>
   </div>
+</header>
 
-  <!-- HERO BANNER -->
-  <section class="px-4 py-2 max-w-md mx-auto">
-    <div class="relative overflow-hidden rounded-2xl p-5 border border-teal-500/25 bg-gradient-to-br from-[#0c2222] via-[#091515] to-[#050b0b] shadow-2xl">
-      <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-teal-500/10 rounded-full blur-2xl pointer-events-none"></div>
-      <div class="relative z-10">
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-950/80 border border-teal-700/50 text-[11px] font-black text-teal-300 mb-2.5">
-          <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-          ⚡ 10 MINS - 2 HOURS EXPRESS DELIVERY
-        </div>
-        <h2 class="text-2xl font-black text-white leading-tight tracking-tight">DoorStep<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-300 via-cyan-400 to-emerald-400">by New Janta Store</span></h2>
-        <p class="text-xs text-gray-300 mt-1.5 font-medium">Kankinara's premier express grocery & essentials delivery store.</p>
-        <div class="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-teal-950 text-center">
-          <div class="bg-black/40 rounded-lg p-1.5 border border-teal-900/40">
-            <p class="text-[10px] text-gray-400">Heritage</p>
-            <p class="text-xs font-black text-teal-300">25+ Years</p>
-          </div>
-          <div class="bg-black/40 rounded-lg p-1.5 border border-teal-900/40">
-            <p class="text-[10px] text-gray-400">Quality</p>
-            <p class="text-xs font-black text-teal-300">100% Pure</p>
-          </div>
-          <div class="bg-black/40 rounded-lg p-1.5 border border-teal-900/40">
-            <p class="text-[10px] text-gray-400">Dispatch</p>
-            <p class="text-xs font-black text-teal-300">In 3 Mins</p>
-          </div>
-        </div>
-      </div>
-    </div>
+<main>
+  <section class="hero">
+    <span class="pill">YOUR LOCAL STORE, AT YOUR DOOR</span>
+    <h1>Daily essentials.<br>Delivered simply.</h1>
+    <p>Groceries, snacks and everyday needs in one place.</p>
+    <a href="#products" class="cartlink">Shop now →</a>
   </section>
 
-  <!-- PRODUCT FEED -->
-  <main class="px-4 py-3 max-w-md mx-auto space-y-6" id="productContainer">
-    <!-- Rendered via JS -->
-  </main>
+  <?php if ($message !== ""): ?>
+    <div class="notice"><?= htmlspecialchars($message) ?></div>
+  <?php endif; ?>
 
-  <!-- FLOATING CART BAR -->
-  <div id="cartBar" class="fixed bottom-0 left-0 right-0 p-3 z-40 hidden">
-    <div class="max-w-md mx-auto bg-gradient-to-r from-[#0df2a6] via-[#08b6d4] to-[#059669] text-black rounded-2xl p-3 shadow-2xl flex items-center justify-between border border-teal-200/40">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-black/20 flex items-center justify-center text-black font-black text-lg">
-          <i class="fa-solid fa-basket-shopping"></i>
-        </div>
-        <div>
-          <p class="text-[11px] font-black uppercase tracking-wider text-black/75"><span id="cartCount">0</span> Items in Cart</p>
-          <p class="text-base font-black leading-tight">₹<span id="cartTotal">0</span> <span class="text-xs font-bold line-through opacity-60" id="cartMrp"></span></p>
-        </div>
-      </div>
-      <button onclick="openCheckout()" class="bg-black text-white hover:bg-gray-900 font-black text-xs px-5 py-2.5 rounded-xl flex items-center gap-1.5 shadow-lg">
-        Proceed <i class="fa-solid fa-arrow-right"></i>
-      </button>
-    </div>
+  <input class="search" id="search" type="search"
+         placeholder="🔎 Search products..." oninput="filterProducts()">
+
+  <h2>Explore Categories</h2>
+  <div class="categories">
+    <div class="category">🥬 Vegetables</div>
+    <div class="category">🥛 Dairy</div>
+    <div class="category">🍎 Fruits</div>
+    <div class="category">🍞 Bakery</div>
+    <div class="category">🍪 Snacks</div>
+    <div class="category">🥤 Drinks</div>
   </div>
 
-  <!-- CHECKOUT MODAL -->
-  <div id="checkoutModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
-    <div class="bg-[#0b1313] border border-teal-500/30 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 max-h-[92vh] overflow-y-auto no-scrollbar shadow-2xl">
-      <div class="flex justify-between items-center border-b border-teal-950 pb-3">
-        <div>
-          <h2 class="text-base font-black text-white">Express Delivery Checkout</h2>
-          <p class="text-[11px] text-teal-400">DoorStep by New Janta Store</p>
+  <h2 id="products">Popular Products</h2>
+  <div class="grid" id="productGrid">
+    <?php foreach ($products as $id => $p): ?>
+      <article class="card" data-name="<?= htmlspecialchars(strtolower($p['name'].' '.$p['category'])) ?>">
+        <div class="emoji"><?= $p['emoji'] ?></div>
+        <div class="name"><?= htmlspecialchars($p['name']) ?></div>
+        <div class="unit"><?= htmlspecialchars($p['unit']) ?></div>
+        <div class="price-row">
+          <span class="price">₹<?= number_format($p['price'], 2) ?></span>
+          <form method="post">
+            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="id" value="<?= (int)$id ?>">
+            <button class="add" type="submit">+ Add</button>
+          </form>
         </div>
-        <button onclick="closeCheckout()" class="w-8 h-8 rounded-full bg-gray-900 border border-teal-900/60 flex items-center justify-center text-gray-400 hover:text-white">&times;</button>
-      </div>
-
-      <!-- Items Summary -->
-      <div class="my-4 space-y-2 border-b border-teal-950 pb-3" id="checkoutItemsList">
-        <!-- Injected -->
-      </div>
-
-      <!-- Customer Form -->
-      <div class="space-y-3 text-xs">
-        <div>
-          <label class="font-bold text-gray-300">Full Name *</label>
-          <input type="text" id="custName" placeholder="e.g. Manjeet Shaw" class="w-full bg-[#121c1c] border border-teal-900/50 rounded-xl p-2.5 mt-1 text-white outline-none focus:border-teal-400">
-        </div>
-        <div>
-          <label class="font-bold text-gray-300">Mobile Number *</label>
-          <input type="tel" id="custPhone" placeholder="10-digit mobile number" class="w-full bg-[#121c1c] border border-teal-900/50 rounded-xl p-2.5 mt-1 text-white outline-none focus:border-teal-400">
-        </div>
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="font-bold text-gray-300">Delivery Address *</label>
-            <button type="button" onclick="pinLiveGps()" id="gpsBtn" class="text-[11px] text-teal-300 font-bold hover:underline flex items-center gap-1">
-              <i class="fa-solid fa-location-crosshairs"></i> 📍 Pin Live GPS
-            </button>
-          </div>
-          <textarea id="custAddress" rows="2" placeholder="House no, Street, Landmark (Kankinara, North 24 Parganas)" class="w-full bg-[#121c1c] border border-teal-900/50 rounded-xl p-2.5 text-white outline-none focus:border-teal-400"></textarea>
-          <input type="hidden" id="custGps" value="">
-          <p id="gpsFeedback" class="text-[10px] text-teal-400 mt-1 hidden"></p>
-        </div>
-
-        <!-- Payment Method -->
-        <div>
-          <label class="font-bold text-gray-300 mb-1.5 block">Payment Mode</label>
-          <div class="grid grid-cols-2 gap-2">
-            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-teal-900/60 bg-[#121c1c] cursor-pointer">
-              <input type="radio" name="payMode" value="COD" checked class="accent-teal-400">
-              <span class="font-bold text-white">Cash on Delivery</span>
-            </label>
-            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-teal-900/60 bg-[#121c1c] cursor-pointer">
-              <input type="radio" name="payMode" value="RAZORPAY" class="accent-teal-400">
-              <span class="font-bold text-white">Razorpay / UPI</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bill Breakdown -->
-      <div class="mt-4 pt-3 border-t border-teal-950 space-y-1.5 text-xs text-gray-400">
-        <div class="flex justify-between"><span>Item Total</span><span class="text-white font-bold">₹<span id="modalTotal">0</span></span></div>
-        <div class="flex justify-between text-teal-400"><span>MRP Savings</span><span class="font-bold">-₹<span id="modalSavings">0</span></span></div>
-        <div class="flex justify-between"><span>Delivery Partner Fee</span><span class="text-emerald-400 font-bold uppercase">FREE</span></div>
-        <div class="flex justify-between text-sm font-black text-white pt-2 border-t border-teal-950/80">
-          <span>Grand Total</span>
-          <span class="text-teal-300">₹<span id="modalFinalTotal">0</span></span>
-        </div>
-      </div>
-
-      <button onclick="handlePlaceOrder()" class="w-full mt-4 cyan-btn py-3 rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-xl">
-        <i class="fa-solid fa-lock"></i> Confirm & Place Order
-      </button>
-    </div>
+      </article>
+    <?php endforeach; ?>
   </div>
 
-  <!-- ORDER SUCCESS / TRACKER MODAL -->
-  <div id="orderSuccessModal" class="fixed inset-0 bg-black/85 z-50 hidden flex items-center justify-center p-4 backdrop-blur-md">
-    <div class="bg-[#0b1313] border border-teal-500/40 w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl">
-      <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl mx-auto mb-3 border border-emerald-500/40">
-        <i class="fa-solid fa-check"></i>
-      </div>
-      <h3 class="text-lg font-black text-white">Order Confirmed!</h3>
-      <p class="text-xs text-teal-300 mt-1 font-bold">Order ID: <span id="confirmedOrderId">#DS101</span></p>
-      <p class="text-xs text-gray-400 mt-2">Dispatched by <span class="font-bold text-white">New Janta Store</span>. Reaching your doorstep within 10-30 minutes.</p>
-      
-      <div class="my-4 p-3 rounded-xl bg-gray-900 border border-teal-900/60 text-left text-xs space-y-2">
-        <div class="flex items-center gap-2 text-teal-400 font-bold">
-          <span class="w-2 h-2 rounded-full bg-teal-400 animate-ping"></span> Live Status: Packing at Store
-        </div>
-        <div class="text-gray-400" id="confirmedOrderItems"></div>
-      </div>
+  <section class="cartbox" id="cart">
+    <h2 style="margin-top:0">🛒 Your Cart</h2>
 
-      <button onclick="closeSuccessModal()" class="w-full bg-gray-900 hover:bg-gray-800 text-teal-300 border border-teal-800 font-bold py-2.5 rounded-xl text-xs">
-        Continue Shopping
-      </button>
-    </div>
-  </div>
-
-  <!-- PROFILE & ORDER HISTORY DRAWER (NO ADMIN OR RIDER LINKS) -->
-  <div id="profileDrawer" class="fixed inset-0 bg-black/80 z-50 hidden flex justify-end backdrop-blur-xs">
-    <div class="bg-[#0a1111] border-l border-teal-500/20 w-full max-w-sm h-full p-5 overflow-y-auto no-scrollbar flex flex-col justify-between">
-      <div>
-        <div class="flex justify-between items-center border-b border-teal-950 pb-3">
-          <h3 class="text-sm font-black text-white flex items-center gap-2">
-            <i class="fa-solid fa-id-card text-teal-400"></i> My Profile & Rewards
-          </h3>
-          <button onclick="toggleProfileDrawer()" class="text-gray-400 hover:text-white text-xl font-black">&times;</button>
-        </div>
-
-        <!-- Member Tier Card -->
-        <div class="my-4 p-4 rounded-2xl bg-gradient-to-br from-teal-950/60 to-black border border-teal-500/30">
-          <div class="flex justify-between items-center">
+    <?php if (!$cartCount): ?>
+      <div class="empty">Your cart is empty. Add something you need!</div>
+    <?php else: ?>
+      <?php foreach ($_SESSION['cart'] as $id => $qty): ?>
+        <?php if (isset($products[$id])): ?>
+          <div class="cartitem">
             <div>
-              <p class="text-[10px] uppercase font-bold text-gray-400">Loyalty Club Tier</p>
-              <h4 class="text-base font-black text-teal-300" id="tierName">Bronze Member 🥉</h4>
+              <strong><?= htmlspecialchars($products[$id]['name']) ?></strong>
+              <div class="unit">₹<?= $products[$id]['price'] ?> × <?= (int)$qty ?></div>
             </div>
-            <span class="text-xs font-black px-2.5 py-1 rounded-full bg-teal-950 text-teal-300 border border-teal-800" id="orderCountBadge">0 Orders</span>
-          </div>
-          <div class="mt-3 pt-3 border-t border-teal-950/80 flex justify-between text-xs">
-            <span class="text-gray-400">Lifetime MRP Savings:</span>
-            <span class="font-black text-emerald-400">₹<span id="lifetimeSavings">0</span></span>
-          </div>
-        </div>
-
-        <!-- Orders History -->
-        <h4 class="text-xs font-black text-gray-300 uppercase tracking-wider mb-2">Previous Orders</h4>
-        <div id="orderHistoryList" class="space-y-2.5 text-xs">
-          <!-- Injected -->
-        </div>
-      </div>
-
-      <!-- Clean Footer -->
-      <div class="pt-4 border-t border-teal-950 text-center">
-        <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">DoorStep Express • New Janta Store</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // DEFAULT INVENTORY
-    const DEFAULT_PRODUCTS = [
-      { id: "p1", name: "Aashirvaad Superior MP Shuddh Chakki Atta", unit: "5 kg", price: 215, mrp: 260, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400" },
-      { id: "p2", name: "Fortune Sunlite Refined Sunflower Oil", unit: "1 L", price: 135, mrp: 165, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400" },
-      { id: "p3", name: "Amul Taaza Fresh Toned Milk", unit: "500 ml", price: 27, mrp: 28, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400" },
-      { id: "p4", name: "India Gate Feast Rozzana Basmati Rice", unit: "1 kg", price: 89, mrp: 110, section: "Daily Essentials & Groceries", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
-      
-      { id: "p5", name: "65W Fast Charging Braided Type-C Cable", unit: "1.2 Meter", price: 199, mrp: 499, section: "Electronics & Accessories", img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" },
-      { id: "p6", name: "Magnetic Bass Boost 3.5mm Earphones", unit: "1 Unit", price: 149, mrp: 399, section: "Electronics & Accessories", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
-      { id: "p7", name: "20W Dual Port Fast Wall Charger", unit: "Adapter Only", price: 299, mrp: 699, section: "Electronics & Accessories", img: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" },
-
-      { id: "p8", name: "Lay's Spanish Tomato Tango Chips", unit: "52 g", price: 20, mrp: 20, section: "Snacks & Beverages", img: "https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=400" },
-      { id: "p9", name: "Haldiram's Prabhuji Bhujia Sev", unit: "200 g", price: 55, mrp: 65, section: "Snacks & Beverages", img: "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400" },
-      { id: "p10", name: "Coca Cola Chilled Soft Drink", unit: "750 ml", price: 40, mrp: 45, section: "Snacks & Beverages", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
-    ];
-
-    function getProducts() {
-      const saved = localStorage.getItem("doorstep_products");
-      return saved ? JSON.parse(saved) : DEFAULT_PRODUCTS;
-    }
-
-    function getCart() {
-      const saved = localStorage.getItem("doorstep_cart");
-      return saved ? JSON.parse(saved) : {};
-    }
-
-    function saveCart(cart) {
-      localStorage.setItem("doorstep_cart", JSON.stringify(cart));
-      updateCartUI();
-    }
-
-    function renderFeed() {
-      const products = getProducts();
-      const cart = getCart();
-      const container = document.getElementById("productContainer");
-      const search = document.getElementById("storeSearch").value.toLowerCase();
-      container.innerHTML = "";
-
-      // Group products by section
-      const sections = {};
-      products.forEach(p => {
-        if (!search || p.name.toLowerCase().includes(search)) {
-          const sec = p.section || "Daily Essentials & Groceries";
-          if (!sections[sec]) sections[sec] = [];
-          sections[sec].push(p);
-        }
-      });
-
-      if (Object.keys(sections).length === 0) {
-        container.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold text-xs">No products match your search.</div>`;
-        return;
-      }
-
-      for (let secName in sections) {
-        const secDiv = document.createElement("div");
-        secDiv.className = "space-y-3";
-        secDiv.innerHTML = `
-          <div class="flex items-center justify-between border-b border-teal-950 pb-1.5">
-            <h3 class="text-sm font-black text-white tracking-wide flex items-center gap-1.5">
-              <span class="w-1.5 h-4 rounded-full cyan-btn"></span> ${secName}
-            </h3>
-            <span class="text-[10px] text-teal-400/80 font-bold uppercase">${sections[secName].length} Items</span>
-          </div>
-          <div class="grid grid-cols-2 gap-3" id="sec_${secName.replace(/\\s+/g, '')}"></div>
-        `;
-        container.appendChild(secDiv);
-
-        const grid = secDiv.querySelector(`#sec_${secName.replace(/\\s+/g, '')}`);
-        sections[secName].forEach(p => {
-          const qty = cart[p.id] || 0;
-          const card = document.createElement("div");
-          card.className = "glass-card rounded-2xl p-3 flex flex-col justify-between transition-all duration-200";
-          card.innerHTML = `
-            <div>
-              <div class="relative w-full h-28 rounded-xl overflow-hidden mb-2 bg-black/40">
-                <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover">
-                <span class="absolute top-1.5 left-1.5 bg-black/75 backdrop-blur-md text-[9px] font-black text-teal-300 px-2 py-0.5 rounded-md border border-teal-900/60">
-                  ⚡ 10-15m
-                </span>
-                ${p.mrp > p.price ? `<span class="absolute top-1.5 right-1.5 bg-emerald-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded-md">${Math.round(((p.mrp - p.price)/p.mrp)*100)}% OFF</span>` : ''}
-              </div>
-              <h4 class="text-xs font-bold text-gray-100 line-clamp-2 leading-tight">${p.name}</h4>
-              <p class="text-[11px] text-gray-400 mt-0.5">${p.unit}</p>
+            <div style="text-align:right">
+              <strong>₹<?= number_format($products[$id]['price']*$qty,2) ?></strong>
+              <form method="post" style="margin-top:7px">
+                <input type="hidden" name="action" value="remove">
+                <input type="hidden" name="id" value="<?= (int)$id ?>">
+                <button class="remove" type="submit">− Remove</button>
+              </form>
             </div>
-            <div class="flex items-center justify-between mt-3 pt-2 border-t border-teal-950/80">
-              <div>
-                <p class="text-sm font-black text-white">₹${p.price}</p>
-                ${p.mrp > p.price ? `<p class="text-[10px] text-gray-500 line-through">₹${p.mrp}</p>` : ''}
-              </div>
-              <div>
-                ${qty === 0 
-                  ? `<button onclick="addToCart('${p.id}')" class="cyan-b
+          </div>
+        <?php endif; ?>
+      <?php endforeach; ?>
+
+      <div class="total"><span>Subtotal</span><strong>₹<?= number_format($subtotal,2) ?></strong></div>
+      <div class="total"><span>Delivery</span><strong><?= $delivery == 0 ? "FREE" : "₹".number_format($delivery,2) ?></strong></div>
+      <div class="total grand"><span>Total</span><span>₹<?= number_format($total,2) ?></span></div>
+
+      <?php if ($subtotal < $minimumOrder): ?>
+        <p class="note">Add ₹<?= number_format($minimumOrder-$subtotal,2) ?> more for free delivery (₹199 minimum).</p>
+      <?php else: ?>
+        <p class="note">🎉 Your delivery charge is FREE!</p>
+      <?php endif; ?>
+
+      <p class="note">Checkout is not connected to order storage or payment yet.</p>
+      <form method="post">
+        <input type="hidden" name="action" value="clear">
+        <button class="remove" type="submit">Clear Cart</button>
+      </form>
+    <?php endif; ?>
+  </section>
+</main>
+
+<footer>
+  DoorStep by New Janta Store · Kankinara<br>
+  Everyday essentials, made easy.
+</footer>
+
+<script>
+function filterProducts(){
+    const query = document.getElementById('search').value.toLowerCase().trim();
+    document.querySelectorAll('#productGrid .card').forEach(card=>{
+        card.style.display = card.dataset.name.includes(query) ? '' : 'none';
+    });
+}
+</script>
+</body>
+                                                                                                   </html>
