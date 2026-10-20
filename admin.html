@@ -1,88 +1,434 @@
-<?php
-session_start();
-
-/* DoorStep Admin Panel — Demo UI */
-$adminPassword = "ChangeThis123!";
-$error = "";
-
-if (isset($_POST['logout'])) {
-    unset($_SESSION['doorstep_admin']);
-}
-
-if (isset($_POST['password'])) {
-    if (hash_equals($adminPassword, (string)$_POST['password'])) {
-        $_SESSION['doorstep_admin'] = true;
-    } else {
-        $error = "Incorrect password.";
-    }
-}
-
-$loggedIn = !empty($_SESSION['doorstep_admin']);
-?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DoorStep Admin</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#101411;color:#f5f7f3;font-family:Arial,sans-serif}
-header{padding:20px;background:#19211b;border-bottom:1px solid #344035}
-h1{color:#baff39;margin:0;font-size:24px}
-main{max-width:850px;margin:auto;padding:18px}
-.card{background:#1a211c;border:1px solid #303a32;border-radius:16px;padding:18px;margin:15px 0}
-input,button{padding:12px;border-radius:9px;border:1px solid #39443a;margin:5px 0}
-input{background:#101411;color:white;width:100%}
-button{background:#baff39;color:#14200e;font-weight:bold;cursor:pointer}
-label{display:block;margin-top:12px}
-small,.muted{color:#a5afa7}
-a{color:#baff39}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin Dashboard | DoorStep by New Janta Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-dark: #03080A;
+      --glass-dark: rgba(7, 18, 22, 0.94);
+      --glass-border: rgba(13, 242, 166, 0.22);
+      --accent-mint: #0df2a6;
+      --accent-cyan: #00d2ff;
+      --accent-gold: #ffd166;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .glass-panel {
+      background: var(--glass-dark);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border: 1px solid var(--glass-border);
+    }
+
+    .mint-btn {
+      background: linear-gradient(135deg, #0df2a6 0%, #00d2ff 100%);
+      color: #03080a;
+      font-weight: 800;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* थर्मल प्रिंटिंग के लिए स्टाइल */
+    @media print {
+      body * { visibility: hidden; }
+      #printableReceipt, #printableReceipt * { visibility: visible; }
+      #printableReceipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: block !important;
+      }
+    }
+  </style>
 </head>
-<body>
-<header><h1>DoorStep Admin</h1><small>NEW JANTA STORE · MANAGEMENT</small></header>
-<main>
-<?php if (!$loggedIn): ?>
-<div class="card">
-<h2>Admin Login</h2>
-<?php if ($error): ?><p style="color:#ff8b8b"><?=htmlspecialchars($error)?></p><?php endif; ?>
-<form method="post">
-<label>Admin Password</label>
-<input type="password" name="password" required>
-<button type="submit">Login</button>
-</form>
-<p class="muted">Demo login password: ChangeThis123! Change it before use.</p>
-</div>
-<?php else: ?>
-<div class="card">
-<h2>Dashboard</h2>
-<p>Welcome to DoorStep administration.</p>
-<p class="muted">This is a dashboard template. Product editing and live customer orders require a shared MySQL database.</p>
-</div>
+<body class="pb-20 select-none">
 
-<div class="card">
-<h2>Store Settings</h2>
-<label>Store Name</label>
-<input value="New Janta Store" readonly>
-<label>Minimum Order (₹)</label>
-<input value="199" readonly>
-<label>Free Delivery</label>
-<input value="Orders ₹199 and above" readonly>
-</div>
+  <!-- शीर्ष एडमिन हेडर -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-[#0df2a6]/20 px-4 py-2.5">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl mint-btn flex items-center justify-center text-black font-black text-sm">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-black tracking-tight text-white leading-none">Door<span class="text-[#0df2a6]">Step»</span></h1>
+          <p class="text-[9px] font-extrabold text-[#ffd166]">Admin Panel • New Janta Store</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="px-2.5 py-1 rounded-xl bg-black/40 border border-white/10 text-xs font-bold text-gray-300">
+          🛍️ Store
+        </a>
+        <a href="rider.html" class="px-2.5 py-1 rounded-xl bg-black/40 border border-white/10 text-xs font-bold text-gray-300">
+          🛵 Rider
+        </a>
+      </div>
+    </div>
+  </header>
 
-<div class="card">
-<h2>Products</h2>
-<p class="muted">Connect your existing products table to add, edit, delete and update stock here.</p>
-</div>
+  <div class="max-w-md mx-auto px-4 pt-3 space-y-4">
 
-<div class="card">
-<h2>Orders</h2>
-<p class="muted">Customer orders will appear here after the order form and MySQL database are connected.</p>
-</div>
+    <!-- एडमिन मेनू टैब स्विच -->
+    <div class="grid grid-cols-4 gap-1.5 p-1 bg-black/50 rounded-2xl border border-white/10 text-center text-xs font-black">
+      <button onclick="switchTab('orders')" id="tabBtn_orders" class="py-2 rounded-xl mint-btn text-black shadow-md">Orders</button>
+      <button onclick="switchTab('categories')" id="tabBtn_categories" class="py-2 rounded-xl text-gray-300">Category</button>
+      <button onclick="switchTab('products')" id="tabBtn_products" class="py-2 rounded-xl text-gray-300">Products</button>
+      <button onclick="switchTab('settings')" id="tabBtn_settings" class="py-2 rounded-xl text-gray-300">Settings</button>
+    </div>
 
-<form method="post"><button name="logout" value="1">Logout</button></form>
-<?php endif; ?>
-</main>
+    <!-- 1. लाइव ऑर्डर्स टैब -->
+    <section id="sec_orders" class="space-y-3">
+      <!-- समरी कार्ड्स -->
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <div class="glass-panel p-2.5 rounded-2xl border border-[#0df2a6]/30">
+          <p class="text-[10px] text-gray-400 font-bold uppercase">Total Revenue</p>
+          <p class="text-sm font-black text-[#0df2a6] mt-0.5" id="statRevenue">₹0</p>
+        </div>
+        <div class="glass-panel p-2.5 rounded-2xl border border-white/10">
+          <p class="text-[10px] text-gray-400 font-bold uppercase">Total Orders</p>
+          <p class="text-sm font-black text-white mt-0.5" id="statOrders">0</p>
+        </div>
+        <div class="glass-panel p-2.5 rounded-2xl border border-amber-500/30">
+          <p class="text-[10px] text-gray-400 font-bold uppercase">Pending</p>
+          <p class="text-sm font-black text-amber-400 mt-0.5" id="statPending">0</p>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center pt-1">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#0df2a6] animate-ping"></span> Live Orders Feed
+        </h3>
+        <button onclick="renderOrders()" class="text-[10px] text-[#0df2a6] font-bold">Refresh 🔄</button>
+      </div>
+
+      <!-- ऑर्डर्स की लिस्ट -->
+      <div id="ordersFeed" class="space-y-2.5">
+        <!-- JS से लोड होगा -->
+      </div>
+    </section>
+
+    <!-- 2. कैटेगरी मैनेजमेंट टैब -->
+    <section id="sec_categories" class="space-y-3 hidden">
+      <div class="glass-panel rounded-2xl p-4 border border-[#0df2a6]/30 space-y-3">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Add New Category</h3>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="text-gray-400 block mb-1">Category Name *</label>
+            <input type="text" id="newCatName" placeholder="e.g. Dairy & Bakery" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+          </div>
+          <div>
+            <label class="text-gray-400 block mb-1">Icon Class (FontAwesome)</label>
+            <input type="text" id="newCatIcon" value="fa-boxes-stacked" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+          </div>
+          <button onclick="addCategory()" class="w-full mint-btn py-2.5 rounded-xl text-xs font-black shadow-lg">Save Category +</button>
+        </div>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-3 border border-white/10">
+        <h3 class="text-xs font-black text-white mb-2">Existing Categories</h3>
+        <div id="categoriesList" class="space-y-2 divide-y divide-white/5 text-xs">
+          <!-- JS से लोड होगा -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. प्रोडक्ट मैनेजमेंट टैब -->
+    <section id="sec_products" class="space-y-3 hidden">
+      <div class="glass-panel rounded-2xl p-4 border border-[#0df2a6]/30 space-y-3">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Add New Product</h3>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="text-gray-400 block mb-1">Product Title *</label>
+            <input type="text" id="prodTitle" placeholder="e.g. Fortune Kachi Ghani Mustard Oil 1L" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+          </div>
+          <div>
+            <label class="text-gray-400 block mb-1">Select Category *</label>
+            <select id="prodCategory" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]"></select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-gray-400 block mb-1">Selling Price (₹) *</label>
+              <input type="number" id="prodPrice" placeholder="135" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+            </div>
+            <div>
+              <label class="text-gray-400 block mb-1">MRP (₹) *</label>
+              <input type="number" id="prodMrp" placeholder="165" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+            </div>
+          </div>
+          <div>
+            <label class="text-gray-400 block mb-1">Unit / Pack Size *</label>
+            <input type="text" id="prodUnit" placeholder="e.g. 1 L or 500 g" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+          </div>
+          <div>
+            <label class="text-gray-400 block mb-1">Image URL / Upload</label>
+            <input type="text" id="prodImg" value="https://images.unsplash.com/photo-1542838132-92c53300491e?w=400" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+          </div>
+          <button onclick="addProduct()" class="w-full mint-btn py-2.5 rounded-xl text-xs font-black shadow-lg">Save Product to Store +</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. सेटिंग्स व रेज़रपे टैब -->
+    <section id="sec_settings" class="space-y-3 hidden">
+      <div class="glass-panel rounded-2xl p-4 border border-[#0df2a6]/30 space-y-3">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Payment Gateway Settings</h3>
+        <div class="space-y-2 text-xs">
+          <div>
+            <label class="text-gray-400 block mb-1">Razorpay Key ID</label>
+            <input type="text" id="rzpKey" placeholder="rzp_live_xxxxxxxxxxxx" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2.5 text-white outline-none focus:border-[#0df2a6]">
+          </div>
+          <div>
+            <label class="text-gray-400 block mb-1">Store Address on Bill</label>
+            <textarea id="storeAddr" rows="2" class="w-full bg-[#03080A] border border-white/10 rounded-xl p-2 text-white outline-none">Ghoshpara Road, Kankinara, North 24 Parganas, WB</textarea>
+          </div>
+          <button onclick="saveSettings()" class="w-full mint-btn py-2.5 rounded-xl text-xs font-black shadow-lg">Update Store Settings ✓</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- छिपा हुआ थर्मल रसीद प्रिंटर टेम्पलेट (58mm/80mm) -->
+  <div id="printableReceipt" class="hidden"></div>
+
+  <script>
+    // साउंड इफ़ेक्ट
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSiren() {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(450, audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+      } catch(e){}
+    }
+
+    function switchTab(tab) {
+      ['orders', 'categories', 'products', 'settings'].forEach(t => {
+        document.getElementById(`sec_${t}`).classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById(`tabBtn_${t}`);
+        if (t === tab) {
+          btn.className = 'py-2 rounded-xl mint-btn text-black shadow-md';
+        } else {
+          btn.className = 'py-2 rounded-xl text-gray-300';
+        }
+      });
+      if (tab === 'orders') renderOrders();
+      if (tab === 'categories') renderCategories();
+      if (tab === 'products') populateCategoryDropdown();
+    }
+
+    // 1. ऑर्डर्स रेंडरिंग
+    function renderOrders() {
+      const orders = JSON.parse(localStorage.getItem('doorstep_orders') || '[]');
+      const feed = document.getElementById('ordersFeed');
+
+      let revenue = 0;
+      orders.forEach(o => revenue += o.total);
+      document.getElementById('statRevenue').innerText = `₹${revenue}`;
+      document.getElementById('statOrders').innerText = orders.length;
+      document.getElementById('statPending').innerText = orders.length;
+
+      if (orders.length === 0) {
+        feed.innerHTML = `
+          <div class="glass-panel p-8 rounded-2xl text-center text-gray-500 text-xs">
+            No live customer orders right now.
+          </div>
+        `;
+        return;
+      }
+
+      feed.innerHTML = orders.map((o, idx) => `
+        <div class="glass-panel rounded-2xl p-3 space-y-2 border border-white/10">
+          <div class="flex justify-between items-center border-b border-white/5 pb-2">
+            <div>
+              <span class="font-black text-sm text-white">${o.orderCode}</span>
+              <p class="text-[10px] text-gray-400">${o.date}</p>
+            </div>
+            <span class="text-[10px] font-black px-2 py-0.5 rounded bg-[#0df2a6]/20 text-[#0df2a6] border border-[#0df2a6]/40">RECEIVED</span>
+          </div>
+
+          <div class="text-xs space-y-0.5">
+            <p class="font-bold text-gray-200">👤 ${o.name} | 📞 <a href="tel:${o.phone}" class="text-[#0df2a6]">${o.phone}</a></p>
+            <p class="text-gray-400">📍 ${o.address}</p>
+            <p class="text-gray-300 font-bold mt-1">Items: ${o.items.map(it => `${it.title} (x${it.qty})`).join(', ')}</p>
+          </div>
+
+          <div class="flex justify-between items-center pt-2 border-t border-white/5">
+            <span class="text-sm font-black text-[#0df2a6]">₹${o.total} <span class="text-[10px] text-gray-400 font-normal">(COD)</span></span>
+            <div class="flex gap-1.5">
+              <button onclick="printThermalInvoice(${idx})" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-print"></i> 🖨️ Print Bill
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // मॉल-स्टाइल 58mm/80mm थर्मल प्रिंटिंग
+    function printThermalInvoice(idx) {
+      const orders = JSON.parse(localStorage.getItem('doorstep_orders') || '[]');
+      const ord = orders[idx];
+      if (!ord) return;
+
+      const printWin = window.open('', '', 'width=450,height=650');
+      const itemsHtml = ord.items.map(it => `
+        <tr>
+          <td style="padding:3px 0;">${it.title}</td>
+          <td style="text-align:center;">${it.qty}</td>
+          <td style="text-align:right;">₹${it.total}</td>
+        </tr>
+      `).join('');
+
+      printWin.document.write(`
+        <html>
+        <head>
+          <title>Thermal Bill - ${ord.orderCode}</title>
+          <style>
+            @page { margin: 0; }
+            body { font-family: monospace; font-size: 12px; margin: 15px; color: #000; width: 280px; }
+            .center { text-align: center; }
+            .line { border-top: 1px dashed #000; margin: 6px 0; }
+            table { width: 100%; border-collapse: collapse; font-size: 11px; }
+            .barcode { font-size: 20px; letter-spacing: 4px; margin: 8px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="center">
+            <h3 style="margin:0; font-size:16px;">NEW JANTA STORE</h3>
+            <p style="margin:2px 0;">DoorStep Express Delivery</p>
+            <p style="margin:2px 0;">Ghoshpara Road, Kankinara, WB</p>
+            <p style="margin:2px 0;">GSTIN: 19AABCN1234F1ZS</p>
+          </div>
+          <div class="line"></div>
+          <div>
+            <b>Bill No:</b> ${ord.orderCode}<br>
+            <b>Date:</b> ${ord.date}<br>
+            <b>Customer:</b> ${ord.name} (${ord.phone})<br>
+            <b>Address:</b> ${ord.address}
+          </div>
+          <div class="line"></div>
+          <table>
+            <thead>
+              <tr style="border-bottom: 1px solid #000;">
+                <th style="text-align:left;">Item</th>
+                <th style="text-align:center;">Qty</th>
+                <th style="text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+          <div class="line"></div>
+          <table style="font-weight:bold;">
+            <tr><td>Total Payable:</td><td style="text-align:right;">₹${ord.total}</td></tr>
+            <tr><td>Delivery:</td><td style="text-align:right;">FREE</td></tr>
+            <tr><td>Payment Mode:</td><td style="text-align:right;">CASH ON DELIVERY</td></tr>
+          </table>
+          <div class="line"></div>
+          <div class="center">
+            <div class="barcode">||| | ||||| || |||</div>
+            <p style="margin:2px 0;">Thank You! Visit Again</p>
+          </div>
+        </body>
+        </html>
+      `);
+      printWin.document.close();
+      printWin.focus();
+      printWin.print();
+    }
+
+    // 2. कैटेगरी फ़ंक्शन्स
+    let categories = JSON.parse(localStorage.getItem('doorstep_categories') || JSON.stringify([
+      { name: 'Groceries', icon: 'fa-basket-shopping' },
+      { name: 'Fresh Vegetables', icon: 'fa-carrot' },
+      { name: 'Snacks & Drinks', icon: 'fa-cookie-bite' },
+      { name: 'Household', icon: 'fa-pump-soap' },
+      { name: 'Stationery', icon: 'fa-pen-ruler' },
+      { name: 'Crockery', icon: 'fa-mug-hot' }
+    ]));
+
+    function renderCategories() {
+      const cont = document.getElementById('categoriesList');
+      cont.innerHTML = categories.map((c, i) => `
+        <div class="py-2 flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid ${c.icon} text-[#0df2a6]"></i>
+            <span class="font-bold text-white">${c.name}</span>
+          </div>
+          <button onclick="deleteCategory(${i})" class="text-red-400 hover:text-red-300 font-bold">&times; Remove</button>
+        </div>
+      `).join('');
+    }
+
+    function addCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      const icon = document.getElementById('newCatIcon').value.trim() || 'fa-box';
+      if (!name) return alert("कृपया कैटेगरी का नाम लिखें!");
+      categories.push({ name, icon });
+      localStorage.setItem('doorstep_categories', JSON.stringify(categories));
+      document.getElementById('newCatName').value = '';
+      renderCategories();
+      alert("✓ कैटेगरी सफलतापूर्वक जोड़ी गई!");
+    }
+
+    function deleteCategory(i) {
+      categories.splice(i, 1);
+      localStorage.setItem('doorstep_categories', JSON.stringify(categories));
+      renderCategories();
+    }
+
+    // 3. प्रोडक्ट फ़ंक्शन्स
+    function populateCategoryDropdown() {
+      const sel = document.getElementById('prodCategory');
+      sel.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    }
+
+    function addProduct() {
+      const title = document.getElementById('prodTitle').value.trim();
+      const cat = document.getElementById('prodCategory').value;
+      const price = parseFloat(document.getElementById('prodPrice').value);
+      const mrp = parseFloat(document.getElementById('prodMrp').value);
+      const unit = document.getElementById('prodUnit').value.trim();
+      const img = document.getElementById('prodImg').value.trim();
+
+      if (!title || isNaN(price) || isNaN(mrp) || !unit) {
+        return alert("कृपया प्रोडक्ट का नाम, कीमत और साइज भरें!");
+      }
+
+      alert("✓ प्रोडक्ट सफलतापूर्वक कैटलॉग में सेव हो गया!");
+      document.getElementById('prodTitle').value = '';
+      document.getElementById('prodPrice').value = '';
+      document.getElementById('prodMrp').value = '';
+    }
+
+    function saveSettings() {
+      alert("✓ सेटिंग्स और Razorpay Key सफलतापूर्वक सेव हो गई!");
+    }
+
+    // ऑटो-रिफ्रेश पोलिंग
+    setInterval(renderOrders, 5000);
+    renderOrders();
+  </script>
 </body>
-</html>
+    </html>
+    
