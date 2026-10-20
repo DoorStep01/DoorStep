@@ -1,246 +1,385 @@
-<?php
-session_start();
-
-/*
- DoorStep by New Janta Store
- Customer Website
-*/
-
-$storeName = "DoorStep";
-$minimumOrder = 199;
-
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-$products = [
-    1 => ["name" => "Fresh Potatoes", "price" => 30, "unit" => "1 kg", "emoji" => "🥔", "category" => "Vegetables"],
-    2 => ["name" => "Fresh Onions", "price" => 35, "unit" => "1 kg", "emoji" => "🧅", "category" => "Vegetables"],
-    3 => ["name" => "Amul Milk", "price" => 30, "unit" => "500 ml", "emoji" => "🥛", "category" => "Dairy"],
-    4 => ["name" => "Brown Bread", "price" => 40, "unit" => "1 pack", "emoji" => "🍞", "category" => "Bakery"],
-    5 => ["name" => "Fresh Bananas", "price" => 50, "unit" => "1 dozen", "emoji" => "🍌", "category" => "Fruits"],
-    6 => ["name" => "Maggi Noodles", "price" => 14, "unit" => "1 pack", "emoji" => "🍜", "category" => "Snacks"],
-    7 => ["name" => "Parle-G Biscuits", "price" => 10, "unit" => "1 pack", "emoji" => "🍪", "category" => "Snacks"],
-    8 => ["name" => "Cold Drink", "price" => 40, "unit" => "750 ml", "emoji" => "🥤", "category" => "Drinks"]
-];
-
-$message = "";
-
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $action = $_POST["action"] ?? "";
-    $id = (int)($_POST["id"] ?? 0);
-
-    if ($action === "add" && isset($products[$id])) {
-        $_SESSION['cart'][$id] = ($_SESSION['cart'][$id] ?? 0) + 1;
-        $message = "Product added to cart!";
-    }
-
-    if ($action === "remove" && isset($_SESSION['cart'][$id])) {
-        $_SESSION['cart'][$id]--;
-        if ($_SESSION['cart'][$id] <= 0) {
-            unset($_SESSION['cart'][$id]);
-        }
-    }
-
-    if ($action === "clear") {
-        $_SESSION['cart'] = [];
-        $message = "Cart cleared.";
-    }
-}
-
-$cartCount = array_sum($_SESSION['cart']);
-$subtotal = 0;
-
-foreach ($_SESSION['cart'] as $id => $qty) {
-    if (isset($products[$id])) {
-        $subtotal += $products[$id]['price'] * $qty;
-    }
-}
-
-$delivery = $subtotal >= $minimumOrder || $subtotal == 0 ? 0 : 20;
-$total = $subtotal + $delivery;
-?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DoorStep by New Janta Store</title>
-<style>
-:root {
-    --bg:#101411;
-    --panel:#1a211c;
-    --green:#baff39;
-    --text:#f5f7f3;
-    --muted:#a5afa7;
-    --border:#303a32;
-}
-*{box-sizing:border-box}
-body{
-    margin:0;background:var(--bg);color:var(--text);
-    font-family:Arial,Helvetica,sans-serif;
-}
-header{
-    position:sticky;top:0;z-index:5;background:#141a15;
-    padding:15px;border-bottom:1px solid var(--border);
-}
-.top{max-width:1000px;margin:auto;display:flex;
-    align-items:center;justify-content:space-between;gap:10px}
-.logo{font-size:22px;font-weight:900;color:var(--green)}
-.logo small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
-.cartlink{background:var(--green);color:#101410;padding:10px 14px;
-    border-radius:12px;text-decoration:none;font-weight:bold}
-main{max-width:1000px;margin:auto;padding:16px}
-.hero{
-    background:linear-gradient(120deg,#263b21,#17221a);
-    border:1px solid #40513a;border-radius:22px;padding:25px 20px;
-    margin:8px 0 22px;
-}
-.hero h1{font-size:30px;margin:0 0 10px;line-height:1.15}
-.hero p{color:#d0dacd;margin:0 0 15px}
-.pill{display:inline-block;background:var(--green);color:#15200d;
-    border-radius:30px;padding:9px 13px;font-weight:bold;font-size:13px}
-.search{width:100%;padding:14px;border-radius:13px;border:1px solid var(--border);
-    background:var(--panel);color:white;font-size:16px;margin-bottom:20px}
-h2{font-size:20px;margin:22px 0 14px}
-.categories{display:flex;gap:10px;overflow:auto;padding-bottom:10px}
-.category{flex:0 0 auto;background:var(--panel);border:1px solid var(--border);
-    border-radius:14px;padding:12px;color:white}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid var(--border);
-    border-radius:17px;padding:13px;min-width:0}
-.emoji{height:90px;display:flex;align-items:center;justify-content:center;
-    background:#242d25;border-radius:12px;font-size:48px;margin-bottom:12px}
-.name{font-weight:bold;margin-bottom:6px}
-.unit{font-size:12px;color:var(--muted)}
-.price-row{display:flex;align-items:center;justify-content:space-between;
-    gap:6px;margin-top:12px}
-.price{font-weight:900}
-button{border:0;cursor:pointer;font-weight:bold}
-.add{background:var(--green);color:#17200f;border-radius:10px;padding:9px 13px}
-.cartbox{background:var(--panel);border:1px solid var(--border);
-    border-radius:18px;padding:16px;margin:25px 0}
-.cartitem{display:flex;justify-content:space-between;gap:10px;
-    padding:12px 0;border-bottom:1px solid var(--border)}
-.remove{background:#303a32;color:white;border-radius:7px;padding:5px 10px}
-.total{display:flex;justify-content:space-between;margin-top:12px}
-.grand{font-size:19px;font-weight:bold;color:var(--green)}
-.note{font-size:13px;color:var(--muted);line-height:1.6}
-.empty{color:var(--muted);padding:10px 0}
-footer{text-align:center;color:var(--muted);padding:25px 12px;font-size:12px}
-.notice{background:#26351f;border-radius:10px;padding:10px;margin:12px 0;color:var(--green)}
-@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero h1{font-size:40px}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DoorStep by New Janta Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #03080A;
+      --glass-dark: rgba(7, 18, 22, 0.92);
+      --glass-border: rgba(13, 242, 166, 0.22);
+      --accent-mint: #0df2a6;
+      --accent-cyan: #00d2ff;
+      --accent-gold: #ffd166;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow-x: hidden;
+      touch-action: pan-y;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.light-mode {
+      background-color: #f8fafc;
+      color: #0f172a;
+      --glass-dark: rgba(255, 255, 255, 0.96);
+      --glass-border: rgba(0, 0, 0, 0.08);
+    }
+    body.light-mode .text-white { color: #0f172a !important; }
+    body.light-mode .text-gray-300 { color: #334155 !important; }
+    body.light-mode .text-gray-400 { color: #64748b !important; }
+    body.light-mode .bg-\[\#03080A\] { background-color: #ffffff !important; }
+    body.light-mode .bg-\[\#071216\] { background-color: #f1f5f9 !important; }
+    body.light-mode .glass-panel { background: rgba(255, 255, 255, 0.96) !important; border-color: rgba(0, 0, 0, 0.08) !important; }
+
+    .glass-panel {
+      background: var(--glass-dark);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border: 1px solid var(--glass-border);
+    }
+
+    .mint-btn {
+      background: linear-gradient(135deg, #0df2a6 0%, #00d2ff 100%);
+      color: #03080a;
+      font-weight: 800;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @keyframes popIn {
+      0% { transform: translate(-50%, 25px) scale(0.92); opacity: 0; }
+      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+    }
+    .pop-in { animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  </style>
 </head>
-<body>
+<body class="pb-28 select-none">
 
-<header>
-  <div class="top">
-    <div class="logo">DoorStep<small>BY NEW JANTA STORE</small></div>
-    <a class="cartlink" href="#cart">🛒 Cart (<?= (int)$cartCount ?>)</a>
-  </div>
-</header>
-
-<main>
-  <section class="hero">
-    <span class="pill">YOUR LOCAL STORE, AT YOUR DOOR</span>
-    <h1>Daily essentials.<br>Delivered simply.</h1>
-    <p>Groceries, snacks and everyday needs in one place.</p>
-    <a href="#products" class="cartlink">Shop now →</a>
-  </section>
-
-  <?php if ($message !== ""): ?>
-    <div class="notice"><?= htmlspecialchars($message) ?></div>
-  <?php endif; ?>
-
-  <input class="search" id="search" type="search"
-         placeholder="🔎 Search products..." oninput="filterProducts()">
-
-  <h2>Explore Categories</h2>
-  <div class="categories">
-    <div class="category">🥬 Vegetables</div>
-    <div class="category">🥛 Dairy</div>
-    <div class="category">🍎 Fruits</div>
-    <div class="category">🍞 Bakery</div>
-    <div class="category">🍪 Snacks</div>
-    <div class="category">🥤 Drinks</div>
-  </div>
-
-  <h2 id="products">Popular Products</h2>
-  <div class="grid" id="productGrid">
-    <?php foreach ($products as $id => $p): ?>
-      <article class="card" data-name="<?= htmlspecialchars(strtolower($p['name'].' '.$p['category'])) ?>">
-        <div class="emoji"><?= $p['emoji'] ?></div>
-        <div class="name"><?= htmlspecialchars($p['name']) ?></div>
-        <div class="unit"><?= htmlspecialchars($p['unit']) ?></div>
-        <div class="price-row">
-          <span class="price">₹<?= number_format($p['price'], 2) ?></span>
-          <form method="post">
-            <input type="hidden" name="action" value="add">
-            <input type="hidden" name="id" value="<?= (int)$id ?>">
-            <button class="add" type="submit">+ Add</button>
-          </form>
+  <!-- शीर्ष हेडर (ब्रांड, थीम, लोकेशन, मिनी कार्ट) -->
+  <header class="sticky top-0 z-40 glass-panel border-b border-[#0df2a6]/20 px-4 py-2.5">
+    <div class="max-w-md mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl mint-btn flex items-center justify-center text-black font-black text-sm">
+          <i class="fa-solid fa-cart-shopping"></i>
         </div>
-      </article>
-    <?php endforeach; ?>
+        <div>
+          <h1 class="text-lg font-black tracking-tight text-white leading-none">Door<span class="text-[#0df2a6]">Step»</span></h1>
+          <p class="text-[9px] font-extrabold text-[#ffd166]">by NEW JANTA STORE</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- थीम बटन -->
+        <button onclick="toggleTheme()" class="px-2 py-1 rounded-xl bg-black/40 border border-white/10 text-[10px] font-bold text-gray-200">
+          <span id="themeLabel">☀️ White</span>
+        </button>
+
+        <!-- ऊपर का मिनी कार्ट बटन -->
+        <button onclick="openCheckoutModal()" class="w-8 h-8 rounded-xl bg-black/50 border border-[#0df2a6]/40 flex items-center justify-center text-[#0df2a6] relative active:scale-95">
+          <i class="fa-solid fa-basket-shopping text-xs"></i>
+          <span id="topCartBadge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center hidden">0</span>
+        </button>
+
+        <!-- एडमिन व राइडर लिंक -->
+        <a href="admin.html" class="px-2 py-1 rounded-xl bg-[#071216] border border-white/10 text-[10px] font-bold text-gray-300">🏪 Admin</a>
+        <a href="rider.html" class="px-2 py-1 rounded-xl bg-[#071216] border border-white/10 text-[10px] font-bold text-gray-300">🛵 Rider</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-md mx-auto px-4 pt-2.5 space-y-3">
+
+    <!-- लोकेशन व डिलीवरी टाइम स्लॉट -->
+    <div class="glass-panel rounded-2xl p-2.5 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-location-dot text-[#0df2a6]"></i>
+        <div>
+          <p class="text-[10px] text-gray-400 font-bold uppercase">Deliver to</p>
+          <p class="text-xs font-black text-white" id="locDisplay">Ghoshpara Road, Kankinara</p>
+        </div>
+      </div>
+      <button onclick="changeSlot()" id="slotBtn" class="text-[10px] font-black px-2 py-1 rounded-lg bg-[#0df2a6]/15 text-[#0df2a6] border border-[#0df2a6]/40">
+        ⚡ 30m - 2h (Express)
+      </button>
+    </div>
+
+    <!-- सर्च बार -->
+    <div class="relative">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-gray-500 text-xs"></i>
+      <input type="text" id="storeSearch" oninput="renderProducts()" placeholder="Search 'Atta', 'Amul Milk', 'Maggi', 'Oil'..."
+             class="w-full bg-[#071216] border border-[#0df2a6]/30 rounded-2xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-gray-500 outline-none focus:border-[#0df2a6]">
+    </div>
+
+    <!-- 3-सेकंड ऑटो स्लाइडिंग हीरो बैनर -->
+    <div class="relative w-full h-36 rounded-2xl overflow-hidden glass-panel border border-[#0df2a6]/30" id="heroBanner">
+      <div id="bannerSlides" class="w-full h-full relative">
+        <div class="absolute inset-0 p-4 flex flex-col justify-between bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10">
+          <div>
+            <span class="text-[9px] font-black uppercase tracking-wider text-[#0df2a6] bg-[#0df2a6]/20 px-2 py-0.5 rounded-full border border-[#0df2a6]/40">⚡ Freshness at Doorstep</span>
+            <h2 class="text-base font-black text-white mt-1 leading-tight">Groceries, Essentials<br>& More</h2>
+          </div>
+          <button onclick="document.getElementById('storeSearch').focus()" class="w-fit mint-btn px-3 py-1 rounded-xl text-[10px] font-black">Shop Now ➔</button>
+        </div>
+        <img id="bannerImg" src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=800" class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <!-- ₹199 न्यूनतम आर्डर और फ्री डिलीवरी बार -->
+    <div id="freeDeliveryBar" class="glass-panel rounded-2xl p-2.5 border border-[#0df2a6]/30 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🎉</span>
+        <div>
+          <p class="font-extrabold text-white text-[11px]" id="fdText">Free Delivery on orders above ₹199</p>
+          <p class="text-[9px] text-[#0df2a6]" id="fdSub">Add items to unlock instant checkout</p>
+        </div>
+      </div>
+      <span class="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#0df2a6]/20 text-[#0df2a6] border border-[#0df2a6]/40" id="fdBadge">₹199 MIN</span>
+    </div>
+
+    <!-- गोल कैटेगरी रो (Shop by Category) -->
+    <div>
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Shop by Category</h3>
+        <span class="text-[10px] text-[#0df2a6] font-bold">View All ➔</span>
+      </div>
+      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1" id="catRow">
+        <!-- JS से लोड होगा -->
+      </div>
+    </div>
+
+    <!-- Featured Products ग्रिड -->
+    <div>
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white">Featured Products</h3>
+        <span class="text-[10px] text-[#0df2a6] font-bold">View All ➔</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5" id="productGrid">
+        <!-- JS से लोड होगा -->
+      </div>
+    </div>
+
   </div>
 
-  <section class="cartbox" id="cart">
-    <h2 style="margin-top:0">🛒 Your Cart</h2>
+  <!-- ==================== बीच के निचले हिस्से में तैरता हुआ कार्ट बार ==================== -->
+  <div id="floatingCart" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-sm z-40 hidden pop-in">
+    <div class="glass-panel rounded-2xl p-3 flex items-center justify-between border-2 border-[#0df2a6]/60 shadow-[0_12px_40px_rgba(13,242,166,0.3)] bg-[#071216]/95">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl mint-btn flex items-center justify-center text-black font-black text-base shadow-md">
+          <i class="fa-solid fa-basket-shopping"></i>
+        </div>
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-wider text-gray-300"><span id="barCount">0</span> Items in Basket</p>
+          <p class="text-base font-black text-white leading-tight">₹<span id="barTotal">0</span></p>
+        </div>
+      </div>
+      <button onclick="openCheckoutModal()" class="mint-btn px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-lg active:scale-95">
+        View Cart ➔
+      </button>
+    </div>
+  </div>
 
-    <?php if (!$cartCount): ?>
-      <div class="empty">Your cart is empty. Add something you need!</div>
-    <?php else: ?>
-      <?php foreach ($_SESSION['cart'] as $id => $qty): ?>
-        <?php if (isset($products[$id])): ?>
-          <div class="cartitem">
-            <div>
-              <strong><?= htmlspecialchars($products[$id]['name']) ?></strong>
-              <div class="unit">₹<?= $products[$id]['price'] ?> × <?= (int)$qty ?></div>
-            </div>
-            <div style="text-align:right">
-              <strong>₹<?= number_format($products[$id]['price']*$qty,2) ?></strong>
-              <form method="post" style="margin-top:7px">
-                <input type="hidden" name="action" value="remove">
-                <input type="hidden" name="id" value="<?= (int)$id ?>">
-                <button class="remove" type="submit">− Remove</button>
-              </form>
-            </div>
+  <!-- ==================== चेकआउट ड्रॉअर (Slide-to-Order) ==================== -->
+  <div id="checkoutModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-end justify-center">
+    <div class="glass-panel border-t border-[#0df2a6]/40 w-full max-w-md rounded-t-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar">
+      <div class="flex justify-between items-center border-b border-white/10 pb-2">
+        <h3 class="text-sm font-black text-white">⚡ Express Delivery Basket</h3>
+        <button onclick="closeCheckoutModal()" class="w-7 h-7 rounded-full bg-white/10 text-gray-300 font-bold">&times;</button>
+      </div>
+
+      <!-- कार्ट आइटम्स -->
+      <div id="cartItemsList" class="space-y-2 text-xs divide-y divide-white/5 max-h-40 overflow-y-auto no-scrollbar"></div>
+
+      <!-- ग्राहक विवरण फ़ॉर्म (सख्त 3-पॉइंट वैलिडेशन) -->
+      <div class="space-y-2.5 text-xs pt-1">
+        <div>
+          <label class="text-gray-300 font-bold block mb-1">Customer Full Name *</label>
+          <input type="text" id="custName" value="Manjeet Shaw" placeholder="Enter Full Name" class="w-full bg-[#03080A] border border-[#0df2a6]/30 rounded-xl p-2.5 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-gray-300 font-bold block mb-1">Mobile Number (10 Digits) *</label>
+          <input type="tel" id="custPhone" maxlength="10" value="9876543210" placeholder="10-digit mobile number" class="w-full bg-[#03080A] border border-[#0df2a6]/30 rounded-xl p-2.5 text-white outline-none">
+        </div>
+        <div>
+          <label class="text-gray-300 font-bold block mb-1">Detailed Delivery Address *</label>
+          <textarea id="custAddress" rows="2" placeholder="House/Flat No, Landmark, Kankinara" class="w-full bg-[#03080A] border border-[#0df2a6]/30 rounded-xl p-2 text-white outline-none">Flat 2A, Ghoshpara Road, Kankinara</textarea>
+        </div>
+      </div>
+
+      <!-- बिल सारांश -->
+      <div class="glass-panel rounded-xl p-3 border border-white/10 space-y-1 text-xs">
+        <div class="flex justify-between text-gray-400"><span>Item Subtotal:</span><span class="text-white font-bold">₹<span id="billSubtotal">0</span></span></div>
+        <div class="flex justify-between text-gray-400"><span>Delivery Charge:</span><span class="text-[#0df2a6] font-bold">FREE</span></div>
+        <div class="flex justify-between text-sm font-black text-white pt-1.5 border-t border-white/10">
+          <span>Grand Total:</span>
+          <span class="text-[#0df2a6] text-base">₹<span id="billTotal">0</span></span>
+        </div>
+      </div>
+
+      <!-- ₹199 चेतावनी बॉक्स -->
+      <div id="checkoutMinWarning" class="p-2.5 rounded-xl bg-red-950/60 border border-red-500/50 text-red-300 text-xs font-bold text-center hidden">
+        ⚠️ कम से कम ₹199 का आर्डर होना अनिवार्य है!
+      </div>
+
+      <!-- स्लाइड-टू-ऑर्डर बटन (बिजली वाला नॉब) -->
+      <div class="relative w-full h-12 bg-[#03080A] border-2 border-[#0df2a6]/40 rounded-2xl flex items-center p-1 overflow-hidden">
+        <div id="slideKnob" class="w-10 h-10 rounded-xl mint-btn flex items-center justify-center cursor-grab select-none z-10 shadow-lg">
+          <i class="fa-solid fa-bolt text-xs text-black"></i>
+        </div>
+        <p class="absolute inset-0 flex items-center justify-center text-xs font-black text-gray-400 pointer-events-none tracking-wider">
+          SLIDE TO CONFIRM ORDER ➔
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== लाइव ट्रैकिंग व ऑटो-बिल डाउनलोड पेज ==================== -->
+  <div id="trackingModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-panel border border-[#0df2a6]/40 w-full max-w-sm rounded-3xl p-5 space-y-4 text-center">
+      <div class="flex justify-between items-center border-b border-white/10 pb-2">
+        <div class="text-left">
+          <h3 class="text-sm font-black text-white">Live Delivery Tracking</h3>
+          <p class="text-[10px] text-[#0df2a6] font-bold" id="trackOrderCode">Order #DS8921</p>
+        </div>
+        <button onclick="closeTrackingModal()" class="w-7 h-7 rounded-full bg-white/10 text-gray-300 text-xs font-bold">&times;</button>
+      </div>
+
+      <!-- चलती हुई बाइक का मैप -->
+      <div class="relative w-full h-24 rounded-2xl bg-[#03080A] border border-[#0df2a6]/30 overflow-hidden flex items-center justify-center">
+        <div class="text-center">
+          <i class="fa-solid fa-motorcycle text-2xl text-[#0df2a6] animate-bounce"></i>
+          <p class="text-[10px] font-black text-white mt-1">Delivery in ~15 mins</p>
+        </div>
+      </div>
+
+      <!-- 4-स्टेज टाइमलाइन -->
+      <div class="space-y-1.5 text-left text-xs">
+        <div class="flex items-center gap-2 text-[#0df2a6] font-black">
+          <span>✓</span><span>Order Confirmed (New Janta Store)</span>
+        </div>
+        <div class="flex items-center gap-2 text-[#0df2a6] font-black">
+          <span>✓</span><span>Packed at Store</span>
+        </div>
+        <div class="flex items-center gap-2 text-white font-bold animate-pulse">
+          <span>🛵</span><span>Rider Dispatched (Rajesh Kumar)</span>
+        </div>
+        <div class="flex items-center gap-2 text-gray-400 font-bold">
+          <span>○</span><span>Delivered to Your Doorstep</span>
+        </div>
+      </div>
+
+      <!-- OTP बॉक्स -->
+      <div class="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 text-center">
+        <p class="text-[10px] font-bold text-gray-400">Share Delivery OTP with Rider</p>
+        <p class="text-xl font-black text-amber-400">8492</p>
+      </div>
+
+      <!-- ऑटो बिल डाउनलोड / प्रिंट बटन -->
+      <button onclick="downloadCustomerInvoice()" class="w-full py-2.5 rounded-xl mint-btn text-xs font-black flex items-center justify-center gap-2 shadow-lg">
+        <i class="fa-solid fa-file-invoice"></i> 📄 Download / Print Invoice (PDF)
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // उत्पाद कैटलॉग
+    const CATEGORIES = [
+      { name: 'Groceries', icon: 'fa-basket-shopping' },
+      { name: 'Fresh Veg', icon: 'fa-carrot' },
+      { name: 'Snacks', icon: 'fa-cookie-bite' },
+      { name: 'Household', icon: 'fa-pump-soap' },
+      { name: 'Stationery', icon: 'fa-pen-ruler' },
+      { name: 'Crockery', icon: 'fa-mug-hot' }
+    ];
+
+    const PRODUCTS = [
+      { id: 'p1', title: 'Aashirvaad Chakki Atta (5 kg)', unit: '5 kg', price: 245, mrp: 280, discount: '13% OFF', img: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400' },
+      { id: 'p2', title: 'Amul Butter (500 g)', unit: '500 g', price: 135, mrp: 150, discount: '10% OFF', img: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400' },
+      { id: 'p3', title: 'Maggi Noodles (70 g)', unit: '70 g', price: 12, mrp: 20, discount: '40% OFF', img: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?w=400' },
+      { id: 'p4', title: 'Tata Tea Gold (250 g)', unit: '250 g', price: 99, mrp: 120, discount: '17% OFF', img: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=400' }
+    ];
+
+    let cart = {};
+    let lastOrderDetails = null;
+
+    // Web Audio API साउंड
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playPlink() {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(650, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+      } catch(e){}
+    }
+
+    function playThunder() {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 1.2);
+        gain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 1.2);
+      } catch(e){}
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      document.getElementById('themeLabel').innerText = isLight ? '🌙 Black' : '☀️ White';
+    }
+
+    function renderStore() {
+      // कैटेगरीज रेंडर
+      document.getElementById('catRow').innerHTML = CATEGORIES.map(c => `
+        <div class="flex flex-col items-center gap-1.5 min-w-[65px] cursor-pointer">
+          <div class="w-12 h-12 rounded-full glass-panel border border-[#0df2a6]/40 flex items-center justify-center text-[#0df2a6] text-base shadow-md">
+            <i class="fa-solid ${c.icon}"></i>
           </div>
-        <?php endif; ?>
-      <?php endforeach; ?>
+          <span class="text-[10px] font-bold text-gray-300 text-center">${c.name}</span>
+        </div>
+      `).join('');
 
-      <div class="total"><span>Subtotal</span><strong>₹<?= number_format($subtotal,2) ?></strong></div>
-      <div class="total"><span>Delivery</span><strong><?= $delivery == 0 ? "FREE" : "₹".number_format($delivery,2) ?></strong></div>
-      <div class="total grand"><span>Total</span><span>₹<?= number_format($total,2) ?></span></div>
+      renderProducts();
+    }
 
-      <?php if ($subtotal < $minimumOrder): ?>
-        <p class="note">Add ₹<?= number_format($minimumOrder-$subtotal,2) ?> more for free delivery (₹199 minimum).</p>
-      <?php else: ?>
-        <p class="note">🎉 Your delivery charge is FREE!</p>
-      <?php endif; ?>
-
-      <p class="note">Checkout is not connected to order storage or payment yet.</p>
-      <form method="post">
-        <input type="hidden" name="action" value="clear">
-        <button class="remove" type="submit">Clear Cart</button>
-      </form>
-    <?php endif; ?>
-  </section>
-</main>
-
-<footer>
-  DoorStep by New Janta Store · Kankinara<br>
-  Everyday essentials, made easy.
-</footer>
-
-<script>
-function filterProducts(){
-    const query = document.getElementById('search').value.toLowerCase().trim();
-    document.querySelectorAll('#productGrid .card').forEach(card=>{
-        card.style.display = card.dataset.name.includes(query) ? '' : 'none';
-    });
-}
-</script>
-</body>
-                                                                                                   </html>
+    function renderProducts() {
+      const q = document.getElementById('storeSearch').value.toLowerCase();
+      document.getElementById('productGrid').innerHTML = PRODUCTS.filter(p => !q || p.title.toLowerCase().includes(q)).map(p => {
+        const qty = cart[p.id] || 0;
+        return `
+          <div class="glass-panel rounded-2xl p-2.5 flex flex-col justify-between border border-white/10 relative">
+            <span class="absolute top-2 left-2 bg-[#0df2a6] text-black text-[9px] font-black px-1.5 py-0.2 rounded">${p.discount}</span>
+            <div class="w-full h-24 rounded-xl overflow-hidden bg-black/40 mb-2">
+              <img src="${p.img}" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <p class="text-xs font-bold text-white line-clamp-1">${p.title}</p>
+              <p class="text-[10px] text-gray-400">${p.unit}</p>
+              <div class="flex items-center gap-1.5 mt-1">
+                <span class="text-xs font-black text-[#0df2a6]">₹${p.price}</span>
+                <span class="text-[10px] text-gray-500 line-through">₹${p.mrp}</span>
+              </div>
+            </div>
+            <div class="mt-2 pt-2 border-t border-white/10 flex justify-between items-center">
+              ${qty === 0 ? `
+                <button onclick="addToCart('${p.id}')" class="w-full mint-btn py-1.5 rounded-xl text-xs font-black">+ ADD</button>
+              ` : `
+                <div class="w-full flex items-center justify-between bg-black/60 rounded-xl px-2 py-
