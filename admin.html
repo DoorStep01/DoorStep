@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#041219"><meta name="robots" content="noindex,nofollow">
-<title>DoorStep Admin</title>
+<title>Seconds Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hind:wght@400;500;600&display=swap">
 <style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}
 /* Layout (Variant B): phone column with bottom nav and a raised centre cart button; Admin gets a left sidebar on desktop.
@@ -597,7 +597,7 @@ const BAN0=[
  {id:'b4',tag:'EST. 25+ YEARS',title:'Free delivery above ₹199',sub:'Trusted in Kankinara and Bhatpara for over 25 years',badge:'',cta:'Start shopping',pid:0,img:'',on:true}
 ];
 const SET0={storeName:'New Janta Store',addr:'Station Road, Kankinara / Bhatpara, West Bengal',shopPhone:'',gstin:'',open:true,minOrder:199,
- rzp:'',wa:'919876543210',gmaps:'',riderName:'DoorStep Warrior',riderPhone:'919800000000',slideSec:4,adminPin:'',riderPin:'',paper:80,
+ rzp:'',wa:'919876543210',gmaps:'',riderName:'Seconds Warrior',riderPhone:'919800000000',slideSec:4,adminPin:'',riderPin:'',paper:80,
  footer:'Thank you! Visit again.',showTabs:true,riderRate:25,riderOnline:true,flashHours:3};
 const SLOTS=[
  {id:'x35',t:'Express',s:'30 – 45 mins',eta:40,ic:'bolt'},
@@ -613,7 +613,7 @@ const KEY='doorstep.b1'+(window.DS_CFG?'.s1.'+(window.DS_MODE||'x'):'');
 let afterSave=null,outImg=(d,cb)=>cb(d);
 function fresh(){return{wish:[],cats:clone(CATS0),products:clone(SEED).map(p=>Object.assign(p,{badge:BADGES[p.id]||''})),banners:clone(BAN0),settings:clone(SET0),orders:[],seq:1001,lifeBase:window.DS_CFG?0:1420,
  cust:{name:'',phone:'',addrs:[],addrId:'',slot:'x35',pay:'cod'},trackId:null,theme:'dark'}}
-function load(){const d=fresh();try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);for(const k in o){if(k==='settings')Object.assign(d.settings,o.settings);else if(k==='cust')Object.assign(d.cust,o.cust);else d[k]=o[k]}}}catch(e){}d.settings.riderName='DoorStep Warrior';d.cust.addrs=(d.cust.addrs||[]).filter(a=>!(a.id==='a1'&&/Shanti Kutir/.test(a.txt)));if(!d.cust.addrs.some(a=>a.id===d.cust.addrId))d.cust.addrId=d.cust.addrs[0]?d.cust.addrs[0].id:'';return d}
+function load(){const d=fresh();try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);for(const k in o){if(k==='settings')Object.assign(d.settings,o.settings);else if(k==='cust')Object.assign(d.cust,o.cust);else d[k]=o[k]}}}catch(e){}d.settings.riderName='Seconds Warrior';d.cust.addrs=(d.cust.addrs||[]).filter(a=>!(a.id==='a1'&&/Shanti Kutir/.test(a.txt)));if(!d.cust.addrs.some(a=>a.id===d.cust.addrId))d.cust.addrId=d.cust.addrs[0]?d.cust.addrs[0].id:'';return d}
 let S=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Storage is full. Remove a few photos or use smaller ones.',true)}if(afterSave)afterSave()}
 const U={panel:'store',tab:'home',cat:'all',q:'',cart:{},prevSub:0,pages:[],page:null,unlocked:{},
@@ -816,7 +816,7 @@ function renderStrip(){
 }
 function renderHdr(){
  const dark=S.theme!=='light',n=calc().n;
- $('hdr').innerHTML=`<div class="logo">${ico('bolt',24)}</div><div class="grow"><div class="brand">DoorStep</div><div class="by gt ell">by ${esc(S.settings.storeName)}</div></div><button class="tsw" role="switch" aria-checked="${dark}" aria-label="Dark mode" data-act="theme">${ico('sun',13).replace('class="ic"','class="ic sunI"')}${ico('moon',13).replace('class="ic"','class="ic moonI"')}</button><button class="hbtn" data-act="cart-open" aria-label="Open cart">${ico('bag',18)}<span class="nb" data-cartn${n?'':' hidden'}>${n}</span></button><button class="avatar" data-act="tab" data-t="profile" aria-label="Profile">${S.cust.name?esc(S.cust.name[0].toUpperCase()):ico('user',18)}</button>`;
+ $('hdr').innerHTML=`<div class="logo">${ico('bolt',24)}</div><div class="grow"><div class="brand">Seconds</div><div class="by gt ell">by ${esc(S.settings.storeName)}</div></div><button class="tsw" role="switch" aria-checked="${dark}" aria-label="Dark mode" data-act="theme">${ico('sun',13).replace('class="ic"','class="ic sunI"')}${ico('moon',13).replace('class="ic"','class="ic moonI"')}</button><button class="hbtn" data-act="cart-open" aria-label="Open cart">${ico('bag',18)}<span class="nb" data-cartn${n?'':' hidden'}>${n}</span></button><button class="avatar" data-act="tab" data-t="profile" aria-label="Profile">${S.cust.name?esc(S.cust.name[0].toUpperCase()):ico('user',18)}</button>`;
 }
 function renderNav(){
  const act=S.orders.filter(o=>o.stage<3).length,n=calc().n;$('bnav').hidden=U.panel!=='store';
@@ -903,7 +903,7 @@ function profileHTML(){
  <div class="stats" style="grid-template-columns:1fr 1fr"><div class="card stat"><small>Orders</small><b class="tn">${n}</b></div><div class="card stat"><small>Delivered</small><b class="tn">${done}</b></div></div>
  <div class="card" style="overflow:hidden"><button class="li" data-act="tab" data-t="orders"><span class="e">${ico('orders',18)}</span><span class="grow"><b>My orders &amp; tracking</b><div class="hint">History, live status and bills</div></span>${ico('chev',16)}</button><button class="li" data-act="wishlist"><span class="e">${ico('heart',18)}</span><span class="grow"><b>Wishlist</b><div class="hint">${S.wish.length} saved item${S.wish.length===1?'':'s'}</div></span>${ico('chev',16)}</button><button class="li" data-act="addr"><span class="e">${ico('pin',18)}</span><span class="grow"><b>Saved addresses</b><div class="hint">${S.cust.addrs.length} saved · add Google Maps pin</div></span>${ico('chev',16)}</button><a class="li" href="${waLink('Namaste, mujhe madad chahiye.')}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><span class="e">${ico('chat',18)}</span><span class="grow"><b>Help on WhatsApp</b><div class="hint">Chat with ${esc(S.settings.storeName)}</div></span>${ico('chev',16)}</a>${S.settings.shopPhone?`<a class="li" href="tel:${esc(S.settings.shopPhone)}" style="text-decoration:none;color:inherit"><span class="e">${ico('phone',18)}</span><span class="grow"><b>Call the store</b><div class="hint tn">${esc(S.settings.shopPhone)}</div></span>${ico('chev',16)}</a>`:''}</div>
  ${S.orders.length?`<div class="eyebrow">Recent orders</div>`+S.orders.slice(0,3).map(ordCard).join(''):''}
- <div class="card" style="padding:14px"><span class="chipx">EST. 25+ YEARS</span><p class="mut" style="margin:10px 0 0;font-size:13px">${esc(S.settings.storeName)} has served Kankinara and Bhatpara for over 25 years. DoorStep brings the same shop to your door.</p></div>`;
+ <div class="card" style="padding:14px"><span class="chipx">EST. 25+ YEARS</span><p class="mut" style="margin:10px 0 0;font-size:13px">${esc(S.settings.storeName)} has served Kankinara and Bhatpara for over 25 years. Seconds brings the same shop to your door.</p></div>`;
 }
 function renderStore(){
  const sh=U.tab==='home'||U.tab==='cats';
@@ -1063,7 +1063,7 @@ document.addEventListener('keydown',e=>{
 function loadRzp(ok,fail){if(window.Razorpay)return ok();const s=document.createElement('script');s.src='https://checkout.razorpay.com/v1/checkout.js';s.onload=ok;s.onerror=fail;document.head.appendChild(s)}
 function payOnline(amount,done,fail){
  loadRzp(()=>{try{
-  const r=new window.Razorpay({key:S.settings.rzp,amount:Math.round(amount*100),currency:'INR',name:'DoorStep by '+S.settings.storeName,description:'Grocery order',prefill:{name:S.cust.name,contact:S.cust.phone},theme:{color:'#08876A'},
+  const r=new window.Razorpay({key:S.settings.rzp,amount:Math.round(amount*100),currency:'INR',name:'Seconds by '+S.settings.storeName,description:'Grocery order',prefill:{name:S.cust.name,contact:S.cust.phone},theme:{color:'#08876A'},
    handler:resp=>done(resp.razorpay_payment_id||'paid'),modal:{ondismiss:fail}});
   r.on('payment.failed',()=>toast('Payment failed. Try again or choose cash on delivery.',true));r.open();
  }catch(e){toast('Online payment could not start. Check the Razorpay Key ID.',true);fail()}},
@@ -1181,11 +1181,11 @@ function mapLoop(){if(!mapOn||!$('pgTrack'))return;drawMap();requestAnimationFra
 /* ---------- bill ---------- */
 function receiptHTML(o,w){
  const st=S.settings,a=o.addr||{},L=(x,y)=>`<div class="r"><span>${x}</span><span>${y}</span></div>`;
- return `<div class="paper w${w}"><div class="c xl">${esc(st.storeName.toUpperCase())}</div><div class="c">DoorStep Express Delivery</div><div class="c">${esc(st.addr)}</div>${st.shopPhone?`<div class="c">Ph: ${esc(st.shopPhone)}</div>`:''}${st.gstin?`<div class="c">GSTIN: ${esc(st.gstin)}</div>`:''}<hr><div class="c b">TAX INVOICE / CASH MEMO</div><hr>${L('Bill No',esc(o.id))}${L('Date',esc(new Date(o.ts).toLocaleDateString('en-IN')))}${L('Time',fmtT(o.ts))}<div>Cust: ${esc(o.name)}</div><div>Ph: ${esc(o.phone)}</div><div>Addr: ${esc(a.txt)}</div><hr>${L('ITEM','AMT')}<hr>${o.items.map(i=>`<div>${esc(i.name)}${i.unit?' ('+esc(i.unit)+')':''}</div>${L('&nbsp;&nbsp;'+i.qty+' x '+inr2(i.price),inr2(i.qty*i.price))}`).join('')}<hr>${L('Item total',inr2(o.sub))}${L('Delivery','FREE')}<div class="r b" style="font-size:1.25em"><span>TOTAL</span><span>${inr2(o.total)}</span></div><hr>${L('You saved (MRP)',inr2(o.saved))}${L('Payment',o.pay==='online'?'PAID ONLINE':'CASH/UPI ON DELIVERY')}${o.payId?`<div>Ref: ${esc(o.payId)}</div>`:''}<hr>${code39(o.id)}<div class="bc">${esc(o.id)}</div><div class="c">${esc(st.footer)}</div><div class="c">Items: ${o.items.reduce((s,i)=>s+i.qty,0)}</div></div>`;
+ return `<div class="paper w${w}"><div class="c xl">${esc(st.storeName.toUpperCase())}</div><div class="c">Seconds Express Delivery</div><div class="c">${esc(st.addr)}</div>${st.shopPhone?`<div class="c">Ph: ${esc(st.shopPhone)}</div>`:''}${st.gstin?`<div class="c">GSTIN: ${esc(st.gstin)}</div>`:''}<hr><div class="c b">TAX INVOICE / CASH MEMO</div><hr>${L('Bill No',esc(o.id))}${L('Date',esc(new Date(o.ts).toLocaleDateString('en-IN')))}${L('Time',fmtT(o.ts))}<div>Cust: ${esc(o.name)}</div><div>Ph: ${esc(o.phone)}</div><div>Addr: ${esc(a.txt)}</div><hr>${L('ITEM','AMT')}<hr>${o.items.map(i=>`<div>${esc(i.name)}${i.unit?' ('+esc(i.unit)+')':''}</div>${L('&nbsp;&nbsp;'+i.qty+' x '+inr2(i.price),inr2(i.qty*i.price))}`).join('')}<hr>${L('Item total',inr2(o.sub))}${L('Delivery','FREE')}<div class="r b" style="font-size:1.25em"><span>TOTAL</span><span>${inr2(o.total)}</span></div><hr>${L('You saved (MRP)',inr2(o.saved))}${L('Payment',o.pay==='online'?'PAID ONLINE':'CASH/UPI ON DELIVERY')}${o.payId?`<div>Ref: ${esc(o.payId)}</div>`:''}<hr>${code39(o.id)}<div class="bc">${esc(o.id)}</div><div class="c">${esc(st.footer)}</div><div class="c">Items: ${o.items.reduce((s,i)=>s+i.qty,0)}</div></div>`;
 }
 function billText(o){
  const st=S.settings,W=32,line='-'.repeat(W),two=(a,b)=>{a=String(a);b=String(b);return a+' '.repeat(Math.max(1,W-a.length-b.length))+b};
- const L=[st.storeName.toUpperCase(),'DoorStep Express Delivery',st.addr];if(st.shopPhone)L.push('Ph: '+st.shopPhone);if(st.gstin)L.push('GSTIN: '+st.gstin);
+ const L=[st.storeName.toUpperCase(),'Seconds Express Delivery',st.addr];if(st.shopPhone)L.push('Ph: '+st.shopPhone);if(st.gstin)L.push('GSTIN: '+st.gstin);
  L.push(line,'TAX INVOICE / CASH MEMO',line,two('Bill',o.id),two('Date',new Date(o.ts).toLocaleDateString('en-IN')+' '+fmtT(o.ts)),'Cust: '+o.name+' ('+o.phone+')','Addr: '+o.addr.txt,line);
  o.items.forEach(i=>{L.push(i.name+(i.unit?' ('+i.unit+')':''));L.push(two('  '+i.qty+' x '+inr2(i.price),inr2(i.qty*i.price)))});
  L.push(line,two('Item total',inr2(o.sub)),two('Delivery','FREE'),two('TOTAL',inr2(o.total)),two('You saved',inr2(o.saved)),two('Payment',o.pay==='online'?'PAID ONLINE':'CASH/UPI ON DELIVERY'),line,st.footer);
@@ -1313,7 +1313,7 @@ function adminRazorpay(){
  <div class="card" style="padding:14px"><b>Going live safely</b><p class="hint" style="margin:6px 0 0">This version asks Razorpay for the amount directly in the browser. For real money, create each order on a server with your Key Secret and verify the payment there. I can add that when you are ready.</p></div>`;
 }
 function adminWhatsapp(){
- return `<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:12px"><h3 class="d" style="font-size:16px">WhatsApp support</h3>${fld('s-wa','Support number (with country code)',S.settings.wa,'tel','919876543210')}${fld('s-phone','Shop phone (for the Call button)',S.settings.shopPhone,'tel','98XXXXXXXX')}<div class="hint">This number powers the “Order via WhatsApp Direct” banner, the Help link and “Chat with the store”.</div><div class="acts"><button class="btn pri" data-act="cfg-save">Save</button><a class="btn" href="${waLink('Test message from DoorStep admin')}" target="_blank" rel="noopener">${ico('chat',15)} Send a test message</a></div></div>`;
+ return `<div class="card" style="padding:14px;display:flex;flex-direction:column;gap:12px"><h3 class="d" style="font-size:16px">WhatsApp support</h3>${fld('s-wa','Support number (with country code)',S.settings.wa,'tel','919876543210')}${fld('s-phone','Shop phone (for the Call button)',S.settings.shopPhone,'tel','98XXXXXXXX')}<div class="hint">This number powers the “Order via WhatsApp Direct” banner, the Help link and “Chat with the store”.</div><div class="acts"><button class="btn pri" data-act="cfg-save">Save</button><a class="btn" href="${waLink('Test message from Seconds admin')}" target="_blank" rel="noopener">${ico('chat',15)} Send a test message</a></div></div>`;
 }
 function adminSettings(){
  const s=S.settings;
@@ -1583,7 +1583,7 @@ function applyCatalog(d){
  S.products=has?d.products:[];
  S.cats=(d&&d.cats&&d.cats.length)?d.cats:clone(CATS0);
  S.banners=(d&&Array.isArray(d.banners))?d.banners:BAN0.filter(b=>!b.pid).map(clone);
- S.settings=Object.assign(clone(SET0),(d&&d.settings)||{},{adminPin:'',riderPin:'',riderName:'DoorStep Warrior'});
+ S.settings=Object.assign(clone(SET0),(d&&d.settings)||{},{adminPin:'',riderPin:'',riderName:'Seconds Warrior'});
  Object.keys(U.cart).forEach(id=>{if(!prod(id))delete U.cart[id]});
  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
  return has;
